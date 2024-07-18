@@ -1,0 +1,161 @@
+imp file --> duplicate the file
+do the changes
+review the changes
+test the file
+if good, then change in main file
+
+Git --> Single source of truth
+
+CICD
+------
+Single paper --> write everything in single paper from all
+
+Multiple papers --> finally colloborate imp points into one paper
+
+Colloboration
+
+Branching
+-----------
+main --> points to Production, direct changes are not at allowed.
+through some review process
+
+main --> feature branch
+
+do changes in feature branch --> get reviews --> run some tests --> scan the code
+
+feature --> main
+
+everyone should create one branch for any change...
+
+git log --oneline (you will get log in one line)
+
+4bd656fd136438832b47ed66a211797afc53b3fb --> SHA Code --> 40 chars 
+(no matter how much big file we will give SHA algorithm will create a 40 charchters code)
+
+git - the stupid content tracker (content tracker means that's a key value pair)
+(value is the source code (code in the repository) we wrote and key is the 40 charchters SHA Algorithm code (commit id) assigned to it depending up on the value key will change)
+
+key --> value
+
+4bd656fd136438832b47ed66a211797afc53b3fb --> current code in the workspace
+
+echo "Hello World" | git hash-object --stdin --> prints sha code on the screen 
+(here for Hello World content you will same id anywhere if content changes id will change)
+(git using this SHA algorithm verifies whether content is changed or not according to content id will be generated)
+
+git cat-file <commit id> -p --> print the info about sha code
+
+git checkout -b --> create new branch and change the workspace into new branch (git checkout -b karam-dosa)
+
+After merging pull request in github you need to changes in local repository (that is you need to pull those changes in local repository also)
+git checkout main
+git pull (git pull origin main)
+
+whether to know whether a commit is merge commit or normal commit for merge commit there will be two parents for normal commits only one parent.
+the previous commit is the parent to the present commit in normal commit
+
+Merge
+-------
+Merge
+rebase
+
+Merging
+---------
+create another branch
+do the changes in that branch
+raise PR
+get the approval
+then merge it
+
+merge gives us a new merge which has 2 parents, we can clearly see the history
+
+Rebase
+---------
+rebase --> change the base
+no extra commit
+commit id are changed (different from branch commit id's)
+no history is preserved, it is rewritten as if it is done in main branch
+looks clean, linear history
+
+Merge vs Rebase
+---------------
+a) Merge will give us extra commit id. Rebase will not give us any extra commit id.
+b) In merging history is preserved. You can check origin and see what happened in the branches.
+c) In rebase history is not preserved. Commit id's are changed. No extra commit id's are created.
+
+When Merge?
+-----------
+single branch --> multiple persons are working --> prefer merge
+if you want to keep the history --> prefer merge
+blindly go for merge, if you are not sure
+
+When Rebase?
+------------
+single branch --> single person --> prefer rebase
+if you dont want history --> prefer rebase
+if you want clean structure --> prefer rebase
+
+git branch -d egg-dosa (To delete a branch)
+
+conflicts
+----------------
+if git findsout 2 different content in the same line, it cant take decission. people who wrote the code should sit together and resolve conflict
+
+if main branch is moved forward 
+another branch is trying to merge the changes, then conflict will come 
+(By considering the old main branch not new main branch which has moved)
+
+ChatGpt
+-------
+Here are some common scenarios where merge conflicts might occur:
+
+Different changes to the same part of a file: If both branches modify the same lines of code in a file differently, Git won't know which change to apply, leading to a conflict.
+
+a) File-level conflicts: If files were deleted in one branch but modified in another, Git may not know how to reconcile these differences.
+
+b) Renaming or moving files: Git might struggle to understand that a file in one branch is the same as a file renamed or moved in another branch.
+
+c) Binary files: Git cannot merge binary files (like images or compiled binaries) automatically, so any changes to these files in different branches can cause conflicts.
+
+The number of files itself isn't the primary factor; it's the content and changes within those files that matter. If the changes made in your new branch conflict with changes made in the main branch since they diverged, Git will indicate a conflict when you try to merge the branches back together.
+
+If the content of the files is exactly the same between your branch and the new main branch, and the new main branch has additional files that your branch doesn't have, you typically won't encounter merge conflicts related to those additional files.
+However, there are some considerations to keep in mind:
+
+a) File Deletions: If files were deleted in the new main branch that still exist in your branch (and have been modified), Git will mark these as conflicts because it needs to reconcile the deletion with your changes.
+
+b) Binary Files: If the new files in the main branch are binary files or files that Git cannot merge automatically (like images), you may encounter conflicts.
+
+My Example
+-----------
+for example you made a new branch and doing your work but already main branch has moved forward as so many people are collabrating.
+now you want you work to merge with main branch so you raised a pull request but it showing conflicts becuase main branch has already moved forwad
+so first you pull the changes i.e new main branch into your local by using commands
+git checkout main
+git pull origin main
+so changes have been pulled into main
+now change to your branch
+git checkout karam-egg-dosa
+git rebase main
+after using git rebase main it will show conflicts message in your local git in vs code you can see what are the changes and accept or make changes to that file after doing changes in that file use command
+git rebase --continue (it will show 1/2) (after every conflict resoluting commit the changes)
+then commit changes locally using
+git add .; git commit -m "remove neyyi";
+git rebase --continue (it will show 2/2) (use rebase till conflicts are cleared) (after every conflict resolution commit the changes)
+git add .; git commit -m "instead of 3 eggs 2 eggs and karam";
+you will get in git after running above command
+(all conflicts fixed: run "git rebase --continue")
+then use command git rebase --continue you will get
+Successfully rebased and updated refs/heads/karam-egg-dosa
+after accepting or ignoring change few commit id's will be changed according in your existing karam-egg-dosa branch
+after all conflicts resolved push your changes to remote github
+git push origin karam-egg-dosa -f (here we are using -f forcing the chage without -f it will not work since we have already chaged the history due to conflicts)
+now you can raise pull request since conflicts are not showing
+then reiviewers will reiview your code and finally merged to main branch
+
+
+
+
+
+
+
