@@ -1,3 +1,11 @@
+Session Overview
+----------------
+a) Physical vs Virtualisation vs containerisation
+b) Docker advantages and features
+c) Installing Docker
+d) Docker commands
+
+
 Linux admin --> intermediate level
 project --> manual installation
 Shell scripting
