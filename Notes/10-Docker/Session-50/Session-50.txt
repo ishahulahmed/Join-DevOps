@@ -1,3 +1,10 @@
+Session Overview
+----------------
+a) Docker commands
+b) Dockerfile
+c) Dockerfile instructions
+
+
 docker inspect container-id/image-id --> Full Information of that container-id/image-id
 docker logs container-id --> To See Logs
 docker logs -f container-id  --> To See Runnig Logs -f means follow
@@ -14,6 +21,7 @@ Dockerfile --> keep all the instructions a file i.e Dockerfile and build the ima
 Docker can build images automatically by reading the instructions from a Dockerfile. A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image.
 
 Docker image = BaseOS+ App run time+ system packages and application dependencies + app code
+App run time (like java, node.js, python etc)
 
 docker build -t url/username/image-name:tag path/to/dockerfile
 
@@ -73,6 +81,11 @@ Timing of CMD Instruction:
    a) When you run a Docker container from an image (docker run image-name), Docker creates a new container instance based on the image.
    b) During the startup of the container, Docker uses the CMD instruction to determine the initial command that the container should execute.
    c) If no command is provided when starting the container (using docker run), Docker defaults to the command specified in CMD of the Dockerfile.
+
+
+In a Dockerfile, you can only have one CMD instruction. This is by design in Docker and reflects how Docker containers are expected to be run: with a single command that defines the primary process for the container.
+
+However, you can achieve similar functionality to running multiple commands by using a shell script or a process manager like Supervisor
 
 
 RUN vs CMD

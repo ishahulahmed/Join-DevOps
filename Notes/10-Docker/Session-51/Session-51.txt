@@ -1,0 +1,94 @@
+Session Overview
+-----------------
+a) Dockerfile instructions
+b) Docker build
+c) Docker push
+d) Expense project using Docker
+
+
+ChatGPT-1
+----------
+The CMD instruction in a Dockerfile is used to specify the command that should be executed when a Docker container starts based on that image. It defines the primary process that will run in the container. Here are the key reasons why the CMD instruction is important:
+
+1) Primary Process Definition: The CMD instruction sets the command and parameters that will be executed when a container is run from the Docker image. For example, if your Dockerfile has CMD ["python", "app.py"], then when you run a container from this image, it will start by running the Python script app.py.
+
+2) Default Command: If a Dockerfile does not contain an ENTRYPOINT instruction, then CMD becomes the command and arguments used when you run a container from the image. If both CMD and ENTRYPOINT are specified, CMD provides the default arguments for ENTRYPOINT.
+
+3) Flexibility: While there can only be one CMD instruction in a Dockerfile, you can specify the command as an array (CMD ["executable", "param1", "param2"]) or as a string (CMD command param1 param2). This allows for flexibility in defining the command and its arguments.
+
+4) Overridable: The command specified by CMD can be overridden at runtime by providing a different command when starting the container using docker run. For example, you can run docker run myimage /bin/bash to override the CMD and start a shell instead.
+
+5) User-Friendliness: CMD makes it easier to define and manage how your Docker containers behave when started. It encapsulates the default behavior of the container and helps communicate the intended use of the image to users.
+
+In summary, the CMD instruction is essential in Dockerfiles because it specifies the default command to execute when a Docker container runs from the image. It's a key part of defining the container's behavior and ensures consistency in how containers behave across different environments and deployments.
+
+ChatGPT-2
+---------
+If a Dockerfile does not specify either a CMD or ENTRYPOINT instruction, Docker will use the default behavior, which typically leads to the container starting and immediately exiting. This happens because Docker requires at least one command to run when a container starts. Here's what happens in more detail:
+
+1) Container Start: When you run a container from an image that lacks both CMD and ENTRYPOINT, Docker will attempt to start the container.
+
+2) Immediate Exit: Since there is no instruction telling Docker what process or command to run, the container starts up, initializes briefly, and then exits because it has no ongoing process to keep it running.
+
+3) Container Status: After the container exits, you can check its status using docker ps -a. It will likely show as "Exited" with an exit status code (usually 0 unless a command failed).
+
+To avoid the container immediately exiting, you must specify either a CMD or ENTRYPOINT instruction in your Dockerfile. These instructions define the command that Docker should run as the primary process inside the container. They ensure that there is a process running that keeps the container alive and functioning as intended.
+
+If you forget to include CMD or ENTRYPOINT in your Dockerfile and encounter a situation where the container starts and exits immediately, you can modify the Dockerfile to include the appropriate instruction and rebuild the image. This will ensure that the container has a defined command to execute when it starts, allowing it to remain running as intended.
+
+ChatGPT-3
+---------
+
+
+
+ENTRYPOINT
+
+CMD instruction can be overriden
+same instruction trying to override with ENTRYPOINT is not working
+
+ping -c5 google.com ping -c5 yahoo.com
+
+you can't override ENTRYPOINT, if you try to do it will go append
+
+CMD vs ENTRYPOINT
+----------------
+you can mix CMD and entrypoint for better results
+
+ping -c5
+
+CMD is used to supply default arguements to ENTRYPOINT, we can always override default args from runtime.
+
+USER
+-----------
+you should not let containers running with root access
+
+ARG
+-----------
+1. ARG can be first instruction in only one case. It can be used to supply the version for FROM instruction
+2. You can have args in Dockerfile, you can supply the values through command through option --build-args
+3. You can always have default values to arg and override if required.
+
+
+ENV vs ARG
+-----------
+1. ENV variables can be accessed both at the time build time and containers
+2. ARG instruction can only be accessed at the time of build or image
+
+How can I access arg inside container?
+
+http://daws78s.online
+
+index.html --> nginx welcome page
+
+ONBUILD
+----------
+this is useful as a trigger, if some one is trying to use your image. you can force them to keep somefiles in their workspace or some configuration
+
+MYSQL:8
+---------
+MySQL developers would have chosen some OS, ubuntu, debian, centos, rhel, etc.
+
+FROM ubuntu:20
+RUN apt install mysql-server
+
+Database is created first. We should load default data.
