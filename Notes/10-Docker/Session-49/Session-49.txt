@@ -172,7 +172,7 @@ install docker --> it will create a group called docker
 
 users who are in docker group or root user can only run docker commands...
 
-usermod -aG docker <user-name> (sudo usemod -aG docker ec2-user) (here ec2-user is added to docker group)
+usermod -aG docker <user-name> (sudo usermod -aG docker ec2-user) (here ec2-user is added to docker group)
 (after adding user to group logout from instance and then login again then you can use docker commands)
 
 docker ps --> list down the running containers
