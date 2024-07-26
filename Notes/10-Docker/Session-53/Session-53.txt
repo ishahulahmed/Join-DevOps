@@ -259,7 +259,7 @@ l) Change Request process should be there. There should be approvals from the de
    all approvals are met we will trigger the deployment from Change Request tool that will automatically trigger jenkins.
 m) Once the devops has been implemented completely. even applications are going dev to prod automatically. we will have a relase every two weeks. we will be 
    on the standby. we will immediately resolve if there are any infrastructure issues, traffic issues, ports are correctly up or not. we will be monitoring 
-   these infrastructure strength, application strength.
+   these infrastructure strength, application strength. 
 
 DevOps means faster releases less defects.
 
