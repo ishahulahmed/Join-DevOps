@@ -59,8 +59,8 @@ a) In General Use: More broadly, an orchestrator can be anyone who organizes and
                    will take help of manager..he needs some software
 
 b) In Technology and Computing: An orchestrator refers to a tool or system that manages and coordinates the various components of a complex system. For 
-                                instance, in cloud computing or container management (like Kubernetes), an orchestrator helps manage tasks like deployment,  
-                                scaling, and networking of applications.
+                                instance, in cloud computing or container management (like Kubernetes), an orchestrator helps manage tasks like 
+                                deployment, scaling, and networking of applications.
 
 if you want to run 100pg, we take help of manager..he needs some software (Id for every PG, Room No for every pg for monitoring and control with software)
 101-PG1
@@ -93,7 +93,7 @@ https://eksctl.io/
 
 ChatGPT -- Cluster
 -------------------
-In AWS EKS (Elastic Kubernetes Service), a "cluster" refers to a set of Kubernetes resources that are managed together. Here's a breakdown of what a cluster entails in this context:
+In AWS EKS (Elastic Kubernetes Service), a cluster in AWS EKS is an overarching entity that includes all the components needed to run Kubernetes workloads. Here's a breakdown of what a cluster entails in this context:
 
 a) Control Plane: This is the managed part of the cluster that AWS takes care of. It includes components like the Kubernetes API server, scheduler, and 
                   controller manager. The control plane manages the state of the cluster and orchestrates the various operations.
@@ -171,31 +171,72 @@ Here's a concise comparison of AWS On-Demand, Spot, and Reserved Instances:
                     your bid.
    c) Use Case: Ideal for flexible and fault-tolerant workloads that can tolerate interruptions, such as batch processing or large-scale data analysis.
 3) Reserved Instances:
-   a) Pricing: Significant discounts (up to 75%) compared to On-Demand pricing, with options for 1-year or 3-year terms; requires upfront or partial upfront  
-            payment.
+   a) Pricing: Significant discounts (up to 75%) compared to On-Demand pricing, with options for 1-year or 3-year terms; requires upfront or partial 
+               upfront payment.
    b) Availability: Reserved capacity is guaranteed for the term of the reservation, providing consistent performance and availability.
    c) Use Case: Best for predictable, steady-state workloads where you can commit to a longer-term use, like running a web server or database.
 
 spot instances are not for production they are for non production environmnet UAT and Development and Practise Purposes.
 we are using spot becuase m5.large means huge bill
 
-kubectl get nodes --> display nodes in k8 cluster
+git clone https://github.com/ishahulahmed/k8-eksctl.git
+cd k8-eksctl
+eksctl create cluster --config-file=eks.yaml 
+it takes 10 to 15 mins to create a cluster becuase cluster is not a single component.
 
+kubectl get nodes --> display nodes in k8 cluster
+kubectl version (just version)
+Client Version: v1.30.0-eks-036c24b
+Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+Server Version: v1.30.2-eks-db838b0
+
+in kubernetes everything is a yaml file everything is a resource
 
 K8 Resources
 -----------------
-Namespace --> isolated project where you can create resources related to your project
+Namespace --> isolated project where you can create resources related to your project 
+(like VPC which gurantees an isolated environment where person from anther vpc cannot access this VPC)
+In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace, but not across namespaces.
+https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 
+kubectl api-resources 
+(you will get all the resources in kubernetes)
+kubectl api-resources | wc -l 
+(you will get the count of resouces)
+
+kubectl create namespace expense
+kubectl get ns or kubectl get namespace
+
+default           Active   114m (like default VPC)
+expense           Active   57s (We Created)
+kube-node-lease   Active   114m (Administration)
+kube-public       Active   114m (Administration)
+kube-system       Active   114m (Administration)
+
+kubectl delete namespace expense
+
+we can create namespace using commands but the best practise use yaml file
+
+basic syntax for any resource
+------------------------------
 kind:
 apiVersion:
 metadata:
 
 spec:
 
+apiVersion there will different version use whatever is apt
+metadata means some extra information
+
 kubectl apply -f <file-name.yaml>
 kubectl delete -f <file-name.yaml>
 
+kubectl describe ns expense
+
+Gym Pod --> minimum Gym equipment in a small container.
 pod is smallest deployable unit in kubernetes.
+deployable means runnable. in docker it is container. in kubernetes it is called pod
+A pod in Kubernetes is a group of one or more containers that share the same network and storage. It’s the smallest unit of deployment in Kubernetes, meaning it’s where your applications run. Pods are managed by higher-level controllers to ensure they stay running as needed.
 
 pod vs container
 -------------------
@@ -203,5 +244,123 @@ a pod contains multiple containers. containers inside pod share same n/w and sto
 
 docker run nginx
 
+kubectl apply -f 02-pod.yaml (we are pushing to EKS it will see the instructions assign work to one of its nodes)
+if you don't mention namespace it will run in default namespace
+kubectl get pods
+kubectl describe pod nginx
 
-docker suit = build + image maintanance + docker run time(containerd)
+Status:           Running
+IP:               192.168.32.64 (Pod Ip Address)
+IPs:
+  IP:  192.168.32.64
+
+ Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  29s   default-scheduler  Successfully assigned default/nginx to ip-192-168-34-132.ec2.internal (EKS assigned it to one of the nodes)
+  Normal  Pulling    28s   kubelet            Pulling image "nginx"
+  Normal  Pulled     25s   kubelet            Successfully pulled image "nginx" in 3.009s (3.009s including waiting). Image size: 70985377 bytes.
+  Normal  Created    25s   kubelet            Created container nginx
+  Normal  Started    25s   kubelet            Started container nginx
+
+you cannot give same name to a pod if some other pod is also running with same name
+
+kubectl delete -f 02-pod.yaml
+kubectl delete -f 03-multi-container.yaml
+
+kubectl exec -it multi-container -c alma --bash
+(To Connect to the container like docker exec -it)
+
+When you use docker exec -it to connect to a container and run curl localhost inside the container, you are querying the container itself, not the host server. (by defualt port 80)
+
+but when you connect to a container inside a pod using exec -it and type curl local host (here alma) you will see your getting index.html of nginx. because containers within the same Kubernetes Pod share the same network namespace, which means they are part of the same network. This allows them to communicate with each other using localhost and also to share the same IP address. 
+
+Example Scenario
+-----------------
+Assume you have a Pod with two containers:
+
+Container A: Runs a web server on port 8080.
+Container B: Runs a client application that needs to connect to the web server.
+
+In this case, Container B can connect to the web server in Container A using localhost:8080. Both containers have access to the same network namespace, so communication is straightforward and doesn’t require explicit network configurations for inter-container communication within the same Pod.
+
+Interacting with Other Pods
+-----------------------------
+If you need containers to communicate with containers in other Pods, you would use Kubernetes services and DNS names. For example:
+
+Pod-to-Pod Communication: Use Kubernetes Services to expose Pods, and access other Pods via the service name or cluster DNS.
+
+Cross-Pod Communication: Pods use DNS names for service discovery. A service’s DNS name can be used by any Pod within the same namespace (or across namespaces if configured).
+
+Networks Vs Storage in Pods
+----------------------------
+Containers within a Kubernetes Pod can share the same network namespace but do not automatically share storage because of the distinct ways Kubernetes manages networking and storage. Here’s why:
+
+Shared Network Namespace
+-------------------------
+Reason for Shared Network Namespace:
+
+1) Single Network Namespace: Containers in a Pod share the same network namespace to facilitate inter-container communication and simplify networking. This 
+                             is designed to:
+   a) Simplify Communication: Containers within a Pod can communicate with each other using localhost or 127.0.0.1, which is straightforward because they  
+                              use the same IP address and port namespace.
+   b) Use the Same IP Address: Sharing the network namespace means all containers in the Pod share the same IP address, simplifying service discovery and 
+                               communication patterns within the Pod.
+   c) Consistency: It ensures that all containers can directly talk to each other as if they were running on the same host.
+
+2) How It Works:
+   a) Network Stack: Containers share the same network stack, including IP address, network interfaces, and ports.
+   b) Communication: They can communicate using localhost and bind to ports without interfering with other containers in the same Pod.
+
+Non-Automatic Shared Storage
+------------------------------
+Reason for Non-Automatic Shared Storage:
+
+1) Separate Filesystems: By default, each container in a Pod has its own filesystem. This separation:
+   a) Encapsulates: Ensures that containers remain isolated in terms of file storage and avoid unintended data sharing.
+   b) Flexibility: Allows each container to manage its own storage independently unless explicitly configured to share data.
+
+2) Explicit Configuration for Sharing: To enable shared storage, Kubernetes requires explicit configuration. This ensures that:
+
+   a) Controlled Sharing: Only specific storage areas are shared, avoiding accidental data conflicts or overwrites.
+   b) Flexibility: Users can choose how and where to share storage, using mechanisms like EmptyDir for temporary shared storage or Persistent Volumes for   
+                   long-term storage needs.
+
+3) How to Configure Shared Storage:
+   a) Volumes: You can define volumes in the Pod spec to enable sharing between containers:
+   b) EmptyDir: A temporary volume that exists for the life of the Pod.
+   c) Persistent Volumes (PVs) and Persistent Volume Claims (PVCs): For durable, long-term storage that can be shared across multiple Pods or retained   
+                                                                    beyond the Pod's lifecycle.
+
+Summary
+----------
+a) Network Sharing: Containers in the same Pod share the network namespace to facilitate simple and direct communication.
+b) Storage Sharing: Containers do not share storage by default to maintain encapsulation and flexibility. Shared storage must be explicitly configured using  
+                    volumes.
+The distinction in handling networking and storage helps Kubernetes balance between ease of communication and careful management of resources and data. If you have more questions or need further clarification on specific scenarios, feel free to ask!
+
+if you are accessing an application the logs will be keep on writing. In banking companies logs should be maintained atleast 1 year.
+
+In kubernetes both nodes and containers are ephemeral. (for example autoscaling depending upon the traffic nodes may remain or removed)
+For Maintaing Logs there are some softwares like ELK (Elasticsearch, Logstash and Kibana). We Push our logs into ELK because it is permanent storage there logs will remain any no of days.
+
+can backend application handle both pushing logs and handling user requests then backend has 2 responsibilites then backend performance drastically reduces. in this cases we put backend and have another application called fluentd. it's solo responsibility is it will access whatever the logs backend application writes and pushes it to ELK.
+
+fluentd is like a helper to backend. generally this design pattern is called sidecar pattern.
+we will also use proxy pattern (like reverse proxy) for sidecar we need two containers. 
+Motorcyle with a Sidecar 
+
+In the sidecar pattern, you typically have two containers running in the same environment, such as within the same Kubernetes pod. One container runs the main application, and the other container (the sidecar) provides auxiliary functionality like logging, monitoring, or service discovery.
+
+The proxy pattern, in contrast, does not inherently involve multiple containers. It can be implemented within a single container or process where a proxy object or service intermediates between the client and the target object or service.
+
+ELK --> Log Storage (here logs will be stored permanently irrespective whether pods deleted or not)
+
+
+delete cluster because more charges
+eksctl delete cluster --config-file=eks.yaml
+
+docker suit = build + image maintanance + docker run time (containerd)
+docker uses containerd as runtime
+if docker itself is using containerd as runtime not it's own. Then why to install docker kubernetes discontinued docker now started supporting directly containerd and discontinued. previously kubernetes was using docker now it stopped. if you connect to the node and type docker ps it used to show list of containers
+there are lot of tools to build images not only dokcer
+in order to keep an container running you don't CMD in docker instruction. you use kuberenetes container runtimes to keep container active.
