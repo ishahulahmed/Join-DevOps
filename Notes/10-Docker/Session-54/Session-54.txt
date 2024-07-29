@@ -199,6 +199,10 @@ a) Use FROM maven for simple cases where you just need Maven to build and run yo
 b) Use FROM maven as build for more complex scenarios where you want to optimize your Docker image size by separating the build environment (Maven) from the 
    runtime environment (e.g., JDK or JRE).
 
+By using Multi Stage Build we can Reduce the size of the image.
+
+if use docker build command it should load all the files the workspace for atleast context purpose whether it will use them or not so use dockerignorefile.
+so, please don't keep unnecessary files in the workspace. if you need them in workspace but you don't use for building image use dokcerignore file.
 
 layer1 --> FROM nginx
 layer2 --> FROM nginx+RUN rm -rf /usr/share/nginx/html/index.html --> create image
