@@ -1,3 +1,11 @@
+Session Overview
+------------------
+a) Docker disadvantages
+b) EKS installation through eksctl
+c) K8 Resources
+      i) Namespace
+     ii) Pods
+
 Docker High Level Design
 -------------------------
 1. build the image
