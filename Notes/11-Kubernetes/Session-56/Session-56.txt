@@ -1,0 +1,267 @@
+1. image building
+	develop in vscode
+	push to github
+	pull in workstation
+	build images
+	push to docker hub
+	
+2. login to workstation
+	install docker, kubectl and eksctl
+	either aws configure or attach the role
+	eks.yaml
+	now create cluster through eksctl command
+	kubectl get nodes
+
+3. develop K8 YAML files
+	push to github
+	pull in workstation
+	apply using kubectl command
+
+namespace (namespace is isolate space inside kubernetes cluster like VPC)
+pod (pod can contain multiple containers. containers inside the pod can share same network and then storage space)
+multi container
+
+labels in kubernetes
+---------------------
+Irrespective of any technology you will get labels concept
+Labels is nothing but putting lables in metada
+apiVersion: v1
+kind: Pod
+metadata:
+   name: label-demo
+   labels:
+     environment: production
+     app: nginx
+labels will be helpful in filtering and fuctionality also.
+kubectly apply -f 04-labels.yaml
+kubectl get pods
+kubectl describe pod labels
+
+annotations in kubernetes
+---------------------------
+annotations is alos like labels. but labels have a limit in lenghth. 
+for annotations you can also use special charachters. syntax is also like labels.
+apiVersion: v1
+kind: Pod
+metadata:
+ name: annotations-demo
+ annotations:
+   imageregistry: "https://hub.docker.com/"
+spec:
+ containers:
+ - name: nginx
+   image: nginx:1.12.2
+   ports:
+   - containerPort: 80
+
+kubectly apply -f 05-annotations.yaml
+kubectl get pods
+
+Environment variables in kubernetes
+--------------------------------------
+environment will be in the containers.
+In Kubernetes, environment variables are used to configure containers within pods. They provide a way to inject configuration settings and secrets into containers without hardcoding them into your application code
+kubectl apply -f 06-env.yaml
+kubectl get pods
+kubectl exec -it env-test -- bash (-- space after it)
+env (env enter you will see environment variables)
+exit
+
+resource in kubernetes (resources and its limiting)
+------------------------------------------------------
+In the context of CPU resources, especially in container orchestration environments like Kubernetes, "m" stands for "milli", which represents a thousandth of a CPU unit. 1 CPU is equivalent to 1000 milliCPU (mCPU), where "mCPU" denotes a millithread or millisecond of a CPU core.
+		 		
+1 CPU = 1000m or 1024m
+
+node will allocate first soft limits to the container if it exceeds the max limit then the container will not work. memory will get exhausted.
+
+resources:
+	  # soft limits
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+
+kubectl apply -f 07-resources.yaml
+kubectl get pods
+kubectl describe pod resources 
+		
+if there is a code chage, should I go for build or not? --> yes
+
+code and configuration
+
+will there be only code there will be configuration also.
+
+
+what is configuration?
+db urls, db usernames, passwords, api endpoint, other system urls.
+
+Configuration refers to the settings and options that define how software, systems, or applications behave and operate. It involves specifying parameters and options that control the functionality and performance of software or hardware.
+
+if you put configurations in the code. if i change the end point or username then i need to go into the code to change. instead of doing that we will put in configuration file.
+
+for example parameter store in expense-infra-dev. variables.tf normally when creating security group we need to hardcore vpc id. when we delete and create then vpc id will keep on changing. if you hardcore in the code then you need to come and change everytime in the code.
+
+so, we created a parameter-store (SSM Parameter) so that our code will refer to that parameterstore for value.
+
+keep the key inside code, but value should be out of the code.
+
+if changes, change the value and restart the application. (if you restart the application the code will get the new value)
+
+if you change anthing in code you should go for entire dev to production environment build and release. so, keys we will place inside the code values will be out of the code.
+
+paas --> platform as a service.
+---------------------------------
+platform means it should provide everything.
+
+kubernetes is a platform. ec2 is not a platform
+
+just me telling classes and going is not platform. but, here there is a process recordings uploading, maintaing slack community, taking QA sessions, giving resume service and placement assistance so this is platform.
+
+platform should provide everything what the applicatinon need. 
+
+config map will have values. if you change value in configmap then you can just restart the pod is enough.
+in the same way Secrets. Secrets is nothing but confidential information.
+config map and Secrets both are like configuration. but, configmap is like a plain value and secret is like confidential information.
+
+Kubernetes is called a platform because it provides a unified and comprehensive environment for deploying, managing, and scaling containerized applications. It integrates a variety of components and tools to address different aspects of application management, abstracts infrastructure complexities, and offers extensibility and support for diverse environments. This holistic approach enables organizations to manage their containerized applications efficiently and consistently, which is why Kubernetes is considered a powerful and versatile platform
+
+if change the hardcoded value in code then you need apply pod again but if you maintain config and secrets you can just restart the pod
+configMap --> config means configuration. Map means key value pairs
+
+kubectl apply -f 08-config-map.yaml
+kubectl get configmap
+kubectl describe configmap daws78s
+
+simple it may be any platform not only kubernetes like artificial intelligence or machine learning. platform is nothing but it should provide an environment where you should keep the configurations, secrets all those things.
+
+now pod should refer this values from configmap
+
+kubectl apply -f 09-pod-config.yaml
+kubectl get pods
+kubectl exec -it pod-config -- bash
+env
+exit
+
+There are some fields you cannot update while pod is running then you need delete pod and run again.
+kubectl delete -f 09-pod-config.yaml
+kubectl apply -f 09-pod-config.yaml
+kubectl get pods
+kubectl exec -it pod-config -- bash
+env
+exit
+
+like configMap we will create Secrets and take reference also like configMap
+in secrets.yaml file we will give data as encoded value
+echo "admin" | base64 (in git bash)
+YWRtaW4K (this is encoded value)
+echo "admin123" | base64
+YWRtaW4xMjMK
+
+kubectl apply -f 10-secrets.yaml
+kubectl get secrets
+kubectl appy -f 11-pod-secrets.yaml
+kubectl get pods
+kubectl exec -it pod-secrets -- bash
+env
+exit
+
+
+How can you access pod from outside? --> By Services 
+In docker we Exposed Port (Container port). when we exposed port, since it is a single server we accessed it through host port as host port forwards the request it gets to container port. (-p hos-port:container-port)
+But, kuberentes is platform there are many hosts not one. we can't gurantee where this pod is running. it is not necessary. our intention should be pod is running and application is running. it doesn't matter where it is running. 
+container ip's in docker are ephemeral. ip addresses keep on changing. so, we created a network and gave names to access them which acts like DNS.
+
+same conept here in kubernetes.
+
+Services
+---------
+In Kubernetes, a Service is an abstraction that defines a logical set of Pods and a policy by which to access them. It provides a stable endpoint for accessing a group of Pods, which can be dynamically created and destroyed as the application scales or as Pods fail and are rescheduled.
+
+pods are ephemeral, IP address is temorary, but you can attch this to the service
+
+Service:
+	load balancer
+	service mesh
+Service acts as loadbalancer and service mesh
+
+There are three types of services
+
+1. cluster IP
+2. Node Port
+3. Load Balancer
+
+Cluster IP
+-----------
+request to pod goes through service
+service will not run in node it is just logical. pod is computing. service is not computing. similar to route53 which is also not computing.
+pod can do something but service cannot do anything. service will get attached to pod just like route53.
+when user will hit the service (service-name:port). when service is hit request will be forwarded from service to pod (target port).
+
+if you don't the type of service in yaml file it will be default Cluster IP service
+how service will find a specific pod to communicate that is through labels. service attached to the pod through the labels. labels are acting here as selectors. 
+put multiple labels and bring uniqueness in them.
+serivce like loadbalancer. first you will access service from service request will go to pod. usally loadbalancer will have port. likewise service will also have port. 
+service port and pod port can be different
+
+alias ka='kubectl apply -f' (shortcut for this command)
+ka 12-nginx.yaml
+kubectl get pods
+ka 13-service.yaml
+kubectl get service
+kubectl describe service nginx
+Name:              nginx
+Namespace:         default
+Labels:            <none>
+Annotations:       <none>
+Selector:          component=frontend,environment=dev,name=frontend,project=expense
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.100.23.216
+IPs:               10.100.23.216 (this is service ip address)
+Port:              <unset>  80/TCP
+TargetPort:        80/TCP
+Endpoints:         192.168.53.94:80 (endpoint here is pod ip address)
+Session Affinity:  None
+Events:            <none>
+
+kubectl get pods -o wide 
+(you will get pods ip address)
+NAME          READY   STATUS    RESTARTS   AGE     IP               NODE                             NOMINATED NODE   READINESS GATES
+annotations   1/1     Running   0          5h6m    192.168.40.207   ip-192-168-45-205.ec2.internal   <none>           <none>
+env-test      1/1     Running   0          4h40m   192.168.33.186   ip-192-168-58-180.ec2.internal   <none>           <none>
+labels        1/1     Running   0          5h24m   192.168.37.72    ip-192-168-45-205.ec2.internal   <none>           <none>
+nginx         1/1     Running   0          4m54s   192.168.53.94    ip-192-168-47-166.ec2.internal   <none>           <none>
+pod-config    1/1     Running   0          118m    192.168.39.140   ip-192-168-45-205.ec2.internal   <none>           <none>
+pod-secrets   1/1     Running   0          79m     192.168.32.228   ip-192-168-58-180.ec2.internal   <none>           <none>
+resources     1/1     Running   0          3h50m   192.168.54.91    ip-192-168-47-166.ec2.internal   <none>           <none>
+
+curl http://nginx (command in workstation)
+curl: (6) could not resolve host: nginx
+
+workstation is not part of kubernetes cluster. service can be accessed within the kubernetes cluster.
+kubectl exec -it annotations -- bash (if i am inside the pod what does it mean. it means that i am in the kubernetes cluster)
+curl http://nginx (here you will get html content of nginx)
+cluster ip service is only accessed within the kubernetes cluster
+exit
+
+Node Port
+-----------
+Other than kubernetes cluster everything is called Interet to Kubernetes.
+workstation is called internet to kubernetes cluster. cluster means master and servers.
+apart from kubernetes cluster everything is external or internet.
+
+how to access your pod from internet? solution --> Node Port
+
+if a user hits http://server-public-ip:node-port first request goes to a port in the ec2-instance from there
+
+Cluster IP < Node Port < Load Balancer
+
+NodePort --> 
+internet --> external
+intranet --> inside
+
+Load Balancer
