@@ -335,9 +335,109 @@ USER nginx
  run layer 5 instruction on top of it. So, by doing this way docker is able to manager Memory. Otherwise, if it will build all layers for everything no  
  matter how big storage you will create that storage will not be enough)
 
+Even in your local storage also this might same or different i don't he said only about hub.
+
 What is Docker Layers?
 ------------------------
-Docker Stores images as layers. 
+Docker Stores the images as layers. First Instruction will be Layer 1 on top of Layer 1 it will run Layer 2 and it will Store Layer 2 and on top of Layer 2 it will run Layer 3. it will store layer 3 as separate.
+
+docker system prune -a (prune means delete)
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all images without at least one container associated to them
+  - all build cache
+
+docker builder prune
+WARNING! This will remove all dangling build cache. 
+
+docker image prune
+WARNING! This will remove all dangling images.
+
+set DOCKER_BUILDKIT=0
+cd backend
+docker build -t backend:v1.0 .
+
+env | grep DOCKER_BUILDKIT
+set DOCKER_BUILDKIT=0
+env | grep DOCKER_BUILDKIT
+export DOCKER_BUILDKIT=0
+env | grep DOCKER_BUILDKIT
+
+deleting cache again
+
+docker system prune -a
+docker builder prune
+docker image prune
+
+docker build -t backend:v1.0 .
+(now you can see layering process while image building)
+
+docker follows intermediate containers and layering approach for best storage. docker first it will create the container out of first instruction runs the second instruction. create image out of it and then delete the intermediate container.
+
+docker login
+(after this give your credentials)
+
+docker tag backend:v1.0 ishahulahmed/backend:v1.0
+docker push ishahulahmed/backend:v1.0
+(while pushing you can see it will not push as entire image. it will push as layers)
+The push refers to repository [docker.io/ishahulahmed/backend]
+855bdb9562ef: Preparing
+855bdb9562ef: Pushed
+9a5010e7e3be: Pushed
+757849a4c551: Pushed
+042558fd2c9b: Pushed
+f596146bb853: Pushed
+364f90d01431: Mounted from library/node
+d21971417e92: Mounted from library/node
+aba337309a79: Mounted from library/node
+78561cef0761: Mounted from library/node
+v1.0: digest: sha256:7a67a1364449abc572ab788bcfba904281f4573e609e6c0f3ab5231f7bf3abbc size: 2406
+
+docker tag frontend:v1.0 ishahulahmed/frontend:v1.0
+docker push ishahulahmed/frontend:v1.0
+The push refers to repository [docker.io/ishahulahmed/frontend]
+9f995ae959bf: Preparing
+fb54b18571ce: Preparing
+3804c6ff166f: Preparing
+ed81ad2c57b0: Preparing
+5db08f251485: Preparing
+53efab4d979c: Pushed
+fdebcb7326e5: Pushed
+60e72fbb314e: Mounted from library/nginx
+599e8de62018: Mounted from library/nginx
+09581b9299a2: Mounted from library/nginx
+a39383416a22: Mounted from library/nginx
+a6355e7844d5: Mounted from library/nginx
+fcfa12460e7d: Mounted from library/nginx
+e0781bc8667f: Mounted from library/nginx
+v1.0: digest: sha256:2ac00d6a46119505103e60510621ba526c05b6db182952e783f2d66501f637b2 size: 3232
+
+docker tag mysql:v1.0 ishahulahmed/mysql:v1.0
+docker push ishahulahmed/mysql:v1.0
+The push refers to repository [docker.io/ishahulahmed/mysql]
+4ba1ade8ee82: Preparing
+007821eeee25: Preparing
+77ee579f02fd: Preparing
+fe99df7dedb4: Preparing
+c240e57ab2fa: Preparing
+4ba1ade8ee82: Pushed
+012aa1f0f19c: Mounted from library/mysql
+d4a3c7a78c78: Mounted from library/mysql
+69a7b1be7072: Mounted from library/mysql
+6fcbf3180db6: Mounted from library/mysql
+300303f807f3: Mounted from library/mysql
+29c18dc695ca: Mounted from library/mysql
+e08c762baae9: Mounted from library/mysql
+2606c15a4838: Mounted from library/mysql
+v1.0: digest: sha256:7c9fd164068e7bd2eb0855adfdc4010cb86b1265830125c57c37ad2fc6fac090 size: 3239
+
+docker rm -f `docker ps -a -q`
+docker rmi -f `docker images -a -q`
+
+
+
+
 
 
 ChatGPT
