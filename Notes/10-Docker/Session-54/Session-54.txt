@@ -204,24 +204,230 @@ By using Multi Stage Build we can Reduce the size of the image.
 if use docker build command it should load all the files the workspace for atleast context purpose whether it will use them or not so use dockerignorefile.
 so, please don't keep unnecessary files in the workspace. if you need them in workspace but you don't use for building image use dokcerignore file.
 
+git clone https://github.com/ishahulahmed/shipping.git (clone this shipping project into your server)
+mkdir most-secure
+cd most-secure
+touch credentials
+touch credentials-project-a.txt
+touch credentials-project-b.txt
+
+let suppose, multiple projects credentials are in this server.
+
+dokcer will not have any original storage. container will use host storage.
+we have seen in /var/lib/docker volume directories are getting created. so, all containers will underlying host storage
+
+for example if give
+docker run -d -p 8080:80 -v /:/spam nginx (which directory i am mounting spam isnide nginx container)
+
+/ (what is slash) entire root directory of host system
+here i have mounted entire root directory of a host sytem to a container
+
+docker exec -it b49cb9418097 bash
+root@b49cb9418097:/# ls -l
+root@b49cb9418097:/# cd /
+root@b49cb9418097:/# ls -l
+lrwxrwxrwx    1 root root    7 Jul 22 00:00 bin -> usr/bin
+drwxr-xr-x    2 root root    6 Mar 29 17:20 boot
+drwxr-xr-x    5 root root  340 Aug  2 17:40 dev
+drwxr-xr-x    1 root root   41 Jul 23 07:14 docker-entrypoint.d
+-rwxr-xr-x    1 root root 1620 Jul 23 07:14 docker-entrypoint.sh
+drwxr-xr-x    1 root root   19 Aug  2 17:40 etc
+drwxr-xr-x    2 root root    6 Mar 29 17:20 home
+lrwxrwxrwx    1 root root    7 Jul 22 00:00 lib -> usr/lib
+lrwxrwxrwx    1 root root    9 Jul 22 00:00 lib64 -> usr/lib64
+drwxr-xr-x    2 root root    6 Jul 22 00:00 media
+drwxr-xr-x    2 root root    6 Jul 22 00:00 mnt
+drwxr-xr-x    2 root root    6 Jul 22 00:00 opt
+dr-xr-xr-x  222 root root    0 Aug  2 17:40 proc
+drwx------    2 root root   37 Jul 22 00:00 root
+drwxr-xr-x    1 root root   23 Aug  2 17:40 run
+lrwxrwxrwx    1 root root    8 Jul 22 00:00 sbin -> usr/sbin
+dr-xr-xr-x.  19 root root  267 Aug  2 15:45 spam
+drwxr-xr-x    2 root root    6 Jul 22 00:00 srv
+dr-xr-xr-x   13 root root    0 Aug  2 17:40 sys
+drwxrwxrwt    2 root root    6 Jul 22 00:00 tmp
+drwxr-xr-x    1 root root   66 Jul 22 00:00 usr
+drwxr-xr-x    1 root root   19 Jul 22 00:00 var
+root@b49cb9418097:/# cd spam
+root@b49cb9418097:/spam# ls -l
+total 16
+dr-xr-xr-x.   2 root root    6 Aug  9  2021 afs
+lrwxrwxrwx.   1 root root    7 Aug  9  2021 bin -> usr/bin
+dr-xr-xr-x.   5 root root 4096 Feb 22 19:40 boot
+drwxr-xr-x   17 root root 3220 Aug  2 15:45 dev
+drwxr-xr-x.  91 root root 8192 Aug  2 16:31 etc
+drwxr-xr-x.   4 root root   39 Jun 24 13:12 home
+lrwxrwxrwx.   1 root root    7 Aug  9  2021 lib -> usr/lib
+lrwxrwxrwx.   1 root root    9 Aug  9  2021 lib64 -> usr/lib64
+drwxr-xr-x.   2 root root    6 Aug  9  2021 media
+drwxr-xr-x.   2 root root    6 Aug  9  2021 mnt
+drwxr-xr-x.   4 root root   35 Aug  2 15:49 opt
+dr-xr-xr-x  221 root root    0 Aug  2 15:44 proc
+dr-xr-x---.   4 root root  172 Aug  2 17:33 root
+drwxr-xr-x   33 root root  980 Aug  2 17:04 run
+lrwxrwxrwx.   1 root root    8 Aug  9  2021 sbin -> usr/sbin
+drwxr-xr-x.   2 root root    6 Aug  9  2021 srv
+drwxr-xr-x.   2 root root    6 Feb 22 19:37 swap
+dr-xr-xr-x   13 root root    0 Aug  2 15:44 sys
+drwxrwxrwt    9 root root  180 Aug  2 17:43 tmp
+drwxr-xr-x.  12 root root  144 Feb 22 19:37 usr
+drwxr-xr-x.  19 root root  264 Jun 24 13:08 var
+root@b49cb9418097:/spam# cd /home/ec2-user/
+root@b49cb9418097:/spam/home/ec2-user# ls -l
+total 0
+drwxr-xr-x 6 1001 1001 131 Aug  2 17:34 expense-docker
+drwxr-xr-x 2 1001 1001  91 Aug  2 17:29 most-secure
+drwxr-xr-x 4 1001 1001  62 Aug  2 17:26 shipping
+
+see you got underlying host storage access. how is this possible? this is possible container is running with root user.
+so, you should not run containers as root as container or priviled containers. docker best practice not run container as privileged user.
+
+here mysql container is also running as root user. if used as malicious we can know other projects database details also like customers numbers and other confidential information.
+so, you should run container as normal user
+
+/var/lib/mysql is where mysql stores files while adding a user in dockerfile of mysql to remove root user privileges we need to give that user access mysql files access too. so change ownership that directories to normal user. see mysql dockerfile in expense docker.
+
+docker exec -it backend bash (will not work for alpine image)
+docker exec -it backend sh (will work for alpine image)
+
+Layering
+-----------
 layer1 --> FROM nginx
-layer2 --> FROM nginx+RUN rm -rf /usr/share/nginx/html/index.html --> create image
+layer2 --> FROM nginx + RUN rm -rf /usr/share/nginx/html/index.html --> create image
 
 create layer2 container from layer2 image
 
-layer3 image = layer2+RUN rm -rf /etc/nginx/nginx.conf
+layer3 image = layer2 + RUN rm -rf /etc/nginx/nginx.conf
 
 create layer3 container from layer3 image
 
-layer4 image=layer3+RUN rm -rf /etc/nginx/conf.d/default.conf
-
+layer4 image = layer3 + RUN rm -rf /etc/nginx/conf.d/default.conf
 
 FROM nginx
 RUN rm -rf /usr/share/nginx/html/index.html
 RUN rm -rf /etc/nginx/nginx.conf
 RUN rm -rf /etc/nginx/conf.d/default.conf
 USER nginx
-
+(if we write same instructions as above write an extra line at end. it will not create again new 4 layers. it will pull layer 4 from previous upon it will 
+ build layer 5. Otherwise, if it will build all layers for everything no matter how big storage you will create that storage will not be enough)
 
 FROM nginx
 RUN rm -rf /usr/share/nginx/html/index.html
+
+in git hub it will store only difference. it will not store from the scratch again.
+
+frontend     v1.0      067a11d14309   4 hours ago   189MB
+if i push this to docker hub it will go there as layers
+
+FROM nginx
+RUN rm -rf /usr/share/nginx/html/index.html
+RUN rm -rf /etc/nginx/nginx.conf
+RUN rm -rf /etc/nginx/conf.d/default.conf
+(for example if push this to docker hub it will go there as layers. here as 4 layers)
+
+FROM nginx
+RUN rm -rf /usr/share/nginx/html/index.html
+RUN rm -rf /etc/nginx/nginx.conf
+RUN rm -rf /etc/nginx/conf.d/default.conf
+USER nginx
+(for example if someone else is pushing this to docker we see that only 5th line is different remaing all same as previous. it will check with these 4  
+ instructions do i have already an image in docker storage. we know that there is already layer 4 image in dockerhub. so, docker will pull layer 4 image and  
+ run layer 5 instruction on top of it. So, by doing this way docker is able to manager Memory. Otherwise, if it will build all layers for everything no  
+ matter how big storage you will create that storage will not be enough)
+
+What is Docker Layers?
+------------------------
+Docker Stores images as layers. 
+
+
+ChatGPT
+---------
+Dockerfile
+------------
+# Use an official Python runtime as a base image
+FROM python:3.9-slim
+
+# Set environment variables
+ENV APP_ENV=production
+
+# Install dependencies
+RUN pip install --no-cache-dir flask
+
+# Create a directory for the application
+RUN mkdir /app
+
+# Copy the application code into the image
+COPY app.py /app/
+
+# Set the working directory
+WORKDIR /app
+
+# Expose port 5000
+EXPOSE 5000
+
+# Define the command to run the application
+CMD ["python", "app.py"]
+
+
+Layering Breakdown with Intermediate Containers
+--------------------------------------------------
+1) Base Image Layer (Layer 1): FROM python:3.9-slim
+   a) Description: Starts with the base image, python:3.9-slim, which includes its own layers (e.g., base OS, Python runtime).
+   b) Intermediate Container: Not applicable. This layer is directly inherited from the base image.
+
+2) Environment Variable Layer (Layer 2): ENV APP_ENV=production
+   a) Description: Sets an environment variable APP_ENV in the image.
+   b) Intermediate Container: Not applicable. This change is applied directly as a new layer.
+
+3) Install Dependencies Layer (Layer 3): RUN pip install --no-cache-dir flask
+   a) Intermediate Container: Docker creates a new intermediate container from the image state of Layer 2. The command pip install --no-cache-dir flask is   
+                              executed inside this container.
+   b) Layer: Layer 3 includes the installed Flask package. The intermediate container is discarded after the layer is committed.
+
+4) Create Directory Layer (Layer 4): RUN mkdir /app
+   a) Intermediate Container: Docker creates a new intermediate container from the image state of Layer 3. The command mkdir /app is executed inside this 
+                              container.
+   b) Layer: Layer 4 includes the creation of the /app directory. The intermediate container is discarded after the layer is committed.
+
+5) Copy Application Code Layer (Layer 5): COPY app.py /app/
+   a) Description: Copies the app.py file from the host machine into the /app/ directory in the image.
+   b) Intermediate Container: Not applicable. Docker directly applies the file copy changes to create Layer 5.
+
+6) Set Working Directory Layer (Layer 6): WORKDIR /app
+   a) Description: Sets the working directory for any subsequent instructions to /app.
+   b) Intermediate Container: Not applicable. This change is applied directly as Layer 6.
+
+7) Expose Port Layer (Layer 7): EXPOSE 5000
+   a) Description: Documents that the container listens on port 5000.
+   b) Intermediate Container: Not applicable. This change is applied directly as Layer 7.
+
+8) Command to Run the Application Layer (Layer 8): CMD ["python", "app.py"]
+   a) Description: Specifies the default command to run when the container starts.
+   b) Intermediate Container: Not applicable. This change is applied directly as Layer 8.
+
+Summary of Intermediate Containers
+------------------------------------
+1) Intermediate Containers Created:
+
+   a) For RUN Instructions:
+     
+      i) RUN pip install --no-cache-dir flask
+     ii) RUN mkdir /app
+    iii) Docker creates an intermediate container for each RUN instruction. The command is executed inside the container, and the resulting changes are 
+         committed as a new layer.
+
+2) No Intermediate Containers Created:
+
+   a) For FROM Instruction: Base image setup.
+   b) For ENV Instruction: Environment variable settings.
+   c) For COPY Instruction: File copying from the host.
+   d) For WORKDIR Instruction: Working directory configuration.
+   e) For EXPOSE Instruction: Port exposure documentation.
+   f) For CMD Instruction: Default command configuration.
+
+This breakdown should give a clear picture of how Docker handles intermediate containers and layering during the image build process.
+
+
+
+
+
