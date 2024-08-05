@@ -528,6 +528,58 @@ Summary of Intermediate Containers
 This breakdown should give a clear picture of how Docker handles intermediate containers and layering during the image build process.
 
 
+if there are no images locally. then it will pull from docker hub you need to give credentials if they are you images which are private.
+
+Docker follows layering approach for the effective storage. each instruction is running in separate layer intermediate container is created out of it and this process goes on all the intermediate containers will be remove docker will keep the layers. image is nothing but layers.
+
+RUN addgroup -S expense && adduser -S expense -G expense 
+RUN mkdir /opt/server \
+RUN chown expense:expense -R /opt/server
+
+if you write like this docker will create a new layer for every instruction and build process will become slow.
+
+RUN addgroup -S expense && adduser -S expense -G expense \
+    && mkdir /opt/server \
+    && chown expense:expense -R /opt/server
+
+we are speeding up build process by decreasing number of layers.
+
+Optimize Layer Caching
+-------------------------
+Layer Order: Order your Dockerfile instructions to maximize layer caching. Frequently changing commands should be at the end of the Dockerfile.
+Combine Commands: Combine Command where possible to reduce the number of layers, but balance it with readability.
+
+if chain link is broken in the middle all other depending on it will not work. if link at the end is broken it will be less tedius.
+it will create layers again from where it is broken. if it is broken at the end only the last few layers it will create. previous created will come directly from cache.
+
+docker push ishahulahmed/backend:v1.0
+67473ab1be4b: Pushed
+0bf887fc4b28: Pushed
+bdaa9fc83a2e: Pushed
+6b1db3dedbaa: Pushed
+61a4672d547d: Layer already exists
+64afd0417f62: Layer already exists
+ccd1c30cd963: Layer already exists
+9435f06ff8e3: Layer already exists
+v1.0: digest: sha256:e53bf66b29bcbf4f820a9150b620cc3c88c0e16a6d1610797fdfde4c8 size: 1992
+
+in realtime, we will not keep our images in docker hub. we will place it in ECR (Elastic Container Registry)
+create ECR repository as backend in keep it as private since backend is private
+we will give role to ec2-instance or aws configure command
+if you want to push for example backend image to ecr first 
+login to ecr as how you login docker
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 3150696547000.dkr.ecr.us-east-1.amazonaws.com
+
+after login to ecr tag you build
+docker tag ishahulahmed/backend:v1.0 3150696547000.dkr.ecr.us-east-1.amazonaws.com/backend:v1.0
+ 
+/backend:v1.0 this is ecr url this is where everything is stored. now i want to push it
+docker push ishahulahmed/backend:v1.0 3150696547000.dkr.ecr.us-east-1.amazonaws.com/backend:v1.0
+
+if there is vulenrability in image due to us. straighforward we can make changes in dockerfile. if there is vulenerability due to base image then we need to do patching.
+
+docker system prune 
+will help us to remove unused images and containers and cache. it will help us to save storage.
 
 
 
