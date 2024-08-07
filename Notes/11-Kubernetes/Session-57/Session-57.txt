@@ -241,6 +241,99 @@ expense-k8
 -----------
 in manifest file we will give image address and tell how kubernetes should run this image.
 
+git clone https://github.com/ishahulahmed/expense-k8.git
+cd expense-k8
+
+till now we were using, defualt namespace. but, for expense project first we need create a namespace
+alias ka="kubectly apply -f" (for faster typing)
+ka namespace.yaml
+kubectl get namespace
+
+cd mysql
+ka manifest.yaml
+kubectl get pods (it will show pods in default namespace)
+kubectl get pods -n expense (to get pods in expense namespace)
+NAME                   READY   STATUS    RESTARTS   AGE
+mysql-8b78cbcd-d95ck   1/1     Running   0          116s
+mysql-8b78cbcd-rhfrm   1/1     Running   0          116s
+
+kubens installation
+----------------------
+it is painful for us to everytime to type -n namespace. so, there is a tool called kubens we will install this to make it easier to us.
+https://github.com/ahmetb/kubectx
+sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
+sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+
+cd expese-k8/mysql
+kubens expense (with these command namespace is set as expesne automatically ne need to use -n namespace with every command)
+Context "i-051f3a7e92ac9b22d@expense-1.us-east-1.eksctl.io" modified.
+Active namespace is "expense".
+
+kubect get pods (now, by default you will get pods from expense namespace)
+NAME                   READY   STATUS    RESTARTS   AGE
+mysql-8b78cbcd-d95ck   1/1     Running   0          12m
+mysql-8b78cbcd-rhfrm   1/1     Running   0          12m
+
+
+alias kp="kubectl get pods"
+kp
+
+pod to pod communication can be established using service. here, since it is purely internal connection we are gonna use cluster Ip Service.
+ka manifest.yaml
+deployment.apps/mysql unchanged
+service/mysql created
+
+kubectl get svc
+NAME    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+mysql   ClusterIP   10.100.149.152   <none>        3306/TCP   34s
+
+kubectl exec -it mysql-8b78cbcd-d95ck -- bash
+
+bash-5.1# mysql -u root -pExpenseApp@1
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| transactions       |
++--------------------+
+5 rows in set (0.00 sec)
+
+DB_HOST is a Configuration. we supply a configuration to an application using ConfigMap.
+
+cd backend
+ka manifest.yaml
+kp
+NAME                       READY   STATUS    RESTARTS   AGE
+backend-7b7fbcfd6d-8594z   1/1     Running   0          30s
+backend-7b7fbcfd6d-dbqwn   1/1     Running   0          30s
+mysql-8b78cbcd-d95ck       1/1     Running   0          43m
+mysql-8b78cbcd-rhfrm       1/1     Running   0          43m
+
+kubectl logs backend-7b7fbcfd6d-8594z
+{ "timestamp" : 1723037056, "msg" : "App Started on Port 8080" }
+
+kubectl exec -it backend-7b7fbcfd6d-8594z -- sh (sh since it is a alpine image)
+here we can't use curl http://localhost:/
+this backend application fully secured and immutable (since we have removed root access for this image)
+we can't we even download curl command over here
+in order to use curl command go to dockerfile after FROM instruction place RUN command to download curl overthere
+
+since, we don't have access to other pods. we are creating an debug image from that we will see if everything is working is expected or not.
+this debug image created in expense-docker we will push this to dockerhub from there we will pull and test using debug.yaml file in our expense-k8 project.
+
+cd expense-docker/debug
+docker build -t ishahulahmed/debug:v1.0 .
+docker login
+docker push ishahulahmed/debug:v1.0
+
+
+
+
+
 
 
 
