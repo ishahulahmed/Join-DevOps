@@ -322,7 +322,7 @@ this backend application fully secured and immutable (since we have removed root
 we can't we even download curl command over here
 in order to use curl command go to dockerfile after FROM instruction place RUN command to download curl overthere
 
-since, we don't have access to other pods. we are creating an debug image from that we will see if everything is working is expected or not.
+since, we don't have access to curl command. we are creating an debug image from that we will create a pod and see if everything is working is expected or not.
 this debug image created in expense-docker we will push this to dockerhub from there we will pull and test using debug.yaml file in our expense-k8 project.
 
 cd expense-docker/debug
@@ -330,7 +330,105 @@ docker build -t ishahulahmed/debug:v1.0 .
 docker login
 docker push ishahulahmed/debug:v1.0
 
+cd expense-k8/
+kubectl apply -f debug.yaml
+kp
+kubectl exec -it debug -- bash
+[root@debug /]# telnet mysql 3306
 
+kp
+kubectl logs backend-7b7fbcfd6d-7257j
+{ "timestamp" : 1723105704, "msg" : "App Started on Port 8080" }
+
+backend will run only when mysql is running. we can debug connections in this way.
+
+for frontned, if you take nodeport then you are exposing your ip to public and you can't configure in r53. since your ip will keep on be changing. that's why we take load balancer. load balancer can be configured in route 53.
+
+cd frontend
+ka (kubectl apply -f manifest.yaml)
+kp (kubectl get pods)
+kubectl logs frontend-595489fcd8-nmtwr
+nginx: [emerg] bind() to 0.0.0.0:80 failed (13: Permission denied)
+
+ports 0 to 1023 (reserved by linux for system administration)
+System ports, also known as well-known ports, include ports 0 to 1023 and support commonly used service.
+
+in kubernetes environment, a normal pod with normal user without root access cannot claim port 80 from system. if you give it root access then it can claim. but, giving root access is not in our list (i.e best practise) 
+
+for security reasons we cannot claim port no 80 for nginx, we can claim port no 8080. To do that we need to change our configuration in frontend in our expense.conf 
+
+server {
+    listen       80; // here we make 8080
+    server_name  localhost;
+
+    proxy_http_version 1.1;
+
+we need to change here and then again we need to go for docker build. since in old image there will port no 80. so we need to build new image.
+best practise is configuration should be separate from application code. for every new change in configuration then you won't need to make changes in application code.
+
+we can keep nginx configuration in a conigmap
+nginx configuration path --> /etc/nginx/nginx.conf
+
+spec:
+      containers:
+      - name: frontend
+        image: ishahulahmed/frontend:v1.0
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        # envFrom:
+        # - configMapRef:
+        #     name: frontend
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: frontned
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+
+we are mounting a volume to make changes in configuration file. To change port to 8080 from 80 without building new docker image by using configmap.
+here we are doing this way because we don't want to go again for build process. if we go for build process then we need to whole big process again.
+
+ka (reapplying frontend manifest.yaml after making changes in configuration using configmap)
+kp
+kubectl exec -it frontend-7b0cc56fcb-7bn2h -- bash
+nginx@frontend-984b959d8-9rkhv:/$ cat /etc/nginx/nginx.conf
+
+kubectl get svc
+NAME       TYPE           CLUSTER-IP      EXTERNAL-IP                                                             PORT(S)        AGE
+backend    ClusterIP      10.100.111.61   <none>                                                                  8080/TCP       4h7m
+frontend   LoadBalancer   10.100.6.134    a755626d661974b0288a56aaa57bf539-57822294.us-east-1.elb.amazonaws.com   80:32715/TCP   2m32s
+mysql      ClusterIP      10.100.52.96    <none>                                                                  3306/TCP       4h11m
+
+a755626d661974b0288a56aaa57bf539-57822294.us-east-1.elb.amazonaws.com (url to access to expense app)
+in frontend EXTERNAL-IP load balancer is also created.
+here 32715 will not work becuase we have not allowed it in security group. in security group we should allow the ephemeral range. in kubernetes the ephemeral range decided by kubernetes is 30000 to 32767
+edit inbound rule in security-group Custom TCP 30000-32767 0.0.0.0/0
+load balancer --> Target Instance --> Health Checks
+
+load balancer is not part of eks cluster. so it will be ouside in diagram.
+
+if you need to debug (i.e troubleshooting ping or telnet or curl) then use debug pod
+in debug pod command telnet backend 8080 (this means backend is able to accept connection from port 8080)
+
+in frontend mainfiest.yaml near nginx.conf: |  (here pipe is used to inform this is not a single line but a multi line)
+
+Create Record in route 53
+Record Type --> CNAME - Routes traffic to another domain name and to some AWS resource
+Route traffic to --> Alias to Application and Classic Load Balancer
+Region --> US EAST (N.Virginia)
+a755626d661974b0288a56aaa57bf539-57822294.us-east-1.elb.amazonaws.com
+Routing Policy --> Simple Routing
+
+
+
+
+
+
+ 
 
 
 
