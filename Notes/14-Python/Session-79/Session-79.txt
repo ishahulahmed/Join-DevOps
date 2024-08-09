@@ -74,3 +74,6 @@ total 22
 -rw-r--r-- 1 shahu 197609 7479 Jul 15 15:29 known_hosts
 -rw-r--r-- 1 shahu 197609 6743 Jul 15 15:29 known_hosts.old
 
+
+Authentication --> Login in an application using username and password
+Authorization --> Performing an action inside an application after authentication
