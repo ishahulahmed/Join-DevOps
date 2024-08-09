@@ -58,3 +58,19 @@ Variables
 - CONSTANTS
 
 - by default division returns a float value
+
+cat ~/.ssh/config
+Host  github.com
+     HostName github.com
+     User git
+     IdentityFile ~/.ssh/github
+
+cd ~/.ssh
+ls -l
+total 22
+-rw-r--r-- 1 shahu 197609   89 Jul 15 15:27 config
+-rw-r--r-- 1 shahu 197609 2655 Jul 15 15:11 github
+-rw-r--r-- 1 shahu 197609  574 Jul 15 15:11 github.pub
+-rw-r--r-- 1 shahu 197609 7479 Jul 15 15:29 known_hosts
+-rw-r--r-- 1 shahu 197609 6743 Jul 15 15:29 known_hosts.old
+
