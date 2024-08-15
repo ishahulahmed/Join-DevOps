@@ -392,7 +392,111 @@ NAME          PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALL
 expense-ebs   ebs.csi.aws.com         Delete          WaitForFirstConsumer   false                  40s
 gp2           kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  6h29m
 
-59:35
+
+https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+
+ReclaimPolicy - Delete
+-----------------------
+For volume plugins that support the Delete reclaim policy, deletion removes both the PersistentVolume object from Kubernetes, as well as the associated storage asset in the external infrastructure.
+
+if persitent volume claim is deleted (i.e pod is deleted). it will delete PV and External Volume so it is danger.
+
+ReclaimPolicy - Retain
+-----------------------
+The Retain reclaim policy allows for manual reclamation of the resource. When the PersistentVolumeClaim is deleted, the PersistentVolume still exists and the volume is considered "released". But it is not yet available for another claim because the previous claimant's data remains on the volume. An administrator can manually reclaim the volume with the following steps.
+
+a) Delete the PersistentVolume. The associated storage asset in external infrastructure still exists after the PV is deleted.
+b) Manually clean up the data on the associated storage asset accordingly.
+c) Manually delete the associated storage asset.
+
+If you want to reuse the same storage asset, create a new PersistentVolume with the same storage asset definition
+
+reclaimPolicy: Retain (in  02-ebs-dynamic.yaml)
+
+kubectl delete -f 02-ebs-dynamic.yaml
+
+ebs-dynamic-sc.yaml (this is done by administrative team as they create storage class and provide to us)
+
+kubectl apply -f ebs-dynamic-sc.yaml
+storageclass.storage.k8s.io/expense-ebs created
+
+kubectl apply -f 02-ebs-dynamic.yaml
+persistentvolumeclaim/ebs-dynamic created
+pod/nginx-dynamic created
+
+kubectl get pods
+NAME            READY   STATUS    RESTARTS   AGE
+nginx-dynamic   1/1     Running   0          34s
+
+kubectl get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+pvc-28c92ba7-b5d6-4af5-9bb6-680d2bc75997   4Gi        RWO            Retain           Bound    default/ebs-dynamic   expense-ebs    <unset>                          54s
+
+In AWS --> EC2 --> Elastic Bloc Store --> Volumes --> You can see a volume with 4GB is Created
+
+Storage Class takes cares of creating PV and EBS Volume in AWS (i.e 4GB EBS Volume is Created in AWS)
+In Static we need to create PV and EBS Volume (like in previous we created 100GB)
+
+pvc-28c92ba7-b5d6-4af5-9bb6-680d2bc75997 --> this persistent volume is created by storage class
+
+This is Dynamic Volume Provisioning
+
+Static
+--------
+kid --> Mother --> Father --> Money
+Pod --> PVC    --> PV     --> Storage / Volume
+
+Dynamic
+---------
+kid --> Mother --> E-Wallets     --> Money
+Pod --> PVC    --> Storage Class --> Storage
+
+kubectl apply -f 01-ebs-static.yaml
+persistentvolume/ebs-static created
+persistentvolumeclaim/ebs-static created
+pod/nginx-static created
+service/nginx-lb created
+
+kubectl get pods
+NAME            READY   STATUS    RESTARTS   AGE
+nginx-dynamic   1/1     Running   0          15m
+nginx-static    0/1     Pending   0          7s
+
+kubectl get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+ebs-static                                 100Gi      RWO            Retain           Bound    default/ebs-static                   <unset>                          12s
+pvc-28c92ba7-b5d6-4af5-9bb6-680d2bc75997   4Gi        RWO            Retain           Bound    default/ebs-dynamic   expense-ebs    <unset>                          15m
+
+
+for static we need to create volume (100 GB) and for Dynamic storage class will create volume (4GB)
+
+This is Static and Dynamic Volume Provisioning with EBS
+
+EFS --> Elastic File System
+-----------------------------
+EBS vs EFS
+-----------
+1. EBS is like hard disk, volume and instance should be in same AZ-1a
+2. EFS is through NFS protocol, it can be anywhere
+3. EBS volume is static, it cannot increase on its own.
+4. EFS is completely dynamic in storage, it can automatically expand memory.
+5. Which is suitable for DB applications like MySQL? EBS because of less latency
+ 
+application in mumbai, database is in US (here data fetching, updating take lots of time)
+your storage should be as near as application than latency will be less (as db is beside application need not to travel for connecting db operations will be faster)
+
+
+EBS --> Speed (for databases)
+EFS --> AnyWhere Access (images, file sharing etc)
+
+
+
+
+
+
+
+
+
 
 
 
