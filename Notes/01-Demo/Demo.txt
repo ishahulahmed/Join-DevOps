@@ -145,4 +145,4 @@ DevOps is a Emerging Technology our company asked us to upgrade to DevOps so i w
 Malluru Mamtha --> HR Payroll & Operations (3 Years) --> Concentrix (Work Day Tool - 1 Year) --> Resigned --> Now DevOps
 
 You need to be aware of Devolpment Structure not Devlopment cause development is done by developers.
-No, one will save to learn Java and dot Net at Once. is that possible. in the same way multi clouds not possible. first learn one then after getting command on one cloud then go to next cloud.
+No, one will tell you to learn Java and dot Net at Once. is that possible. in the same way multi clouds not possible. first learn one then after getting command on one cloud then go to next cloud.
