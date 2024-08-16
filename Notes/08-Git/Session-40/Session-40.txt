@@ -1,3 +1,11 @@
+Session Overview
+------------------
+a) Branching
+b) Merge
+c) Rebase
+d) Merge vs Rebase
+e) Merge conflicts
+
 imp file --> duplicate the file
 do the changes
 review the changes
