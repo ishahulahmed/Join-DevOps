@@ -1,0 +1,108 @@
+cluster creation with eksctl
+namespaces
+pods 
+services
+    clusterIP
+    nodePort
+    LoadBalancer
+Sets
+    ReplicaSet
+    Deployment
+expense using deployment
+     how to use configmap as volume
+static provisioning
+    EBS
+dynamic provisioning
+    EBS
+EBS vs EFS
+
+EBS vs EFS
+----------
+1) EBS is Elastic Block Store. it should be in the same availability zone as the server.
+2) EFS is the network file sharing protocol. EFS can be anywhere in the internet.
+3) EBS is used for database applications. so, less latency.
+4) EFS is useful to keep the shared files like images etc. Except Database.
+5) EBS is a fixed storage. EFS is elastic until 47.9 TB. 
+   (While the maximum size of an EBS volume can be up to 16 TB, EFS volume sizes are practically unlimited. The maximu size of a file in EFS is 47.9 TB.
+
+EBS
+----
+1. first create volume
+2. install ebs csi drivers
+3. EC2 nodes should have role to access EBS
+4. create PV equivalent to EBS volume --> admin, cluster level
+5. create PVC --> namespace, user
+6. use PVC in pod
+
+dynamic
+---------
+SC --> admin level, this creates volume and pv automatically.
+pvc, mention sc name
+
+EBS is like a hard disk. it doesn't require any kind of networking. it is beside you system only (like hardisk connected to system analogy) so firewall is not needed for EBS.
+
+EFS means Network file sharing when means it will go through network. So, EFS will also have a Security Group.
+
+EFS
+----
+1. create EFS volume (By default security groups are created when you create an EFS Volume)
+2. Allow EC2 instances on NFS protocol in EFS SG (For the created security group in EFS allow EC2 instances by making changes in it's inbound rules)
+Open EFS --> Select Your File System --> View Details (Click on Network) --> Note the Security Group ID
+Open EC2 --> Navigate to Security Groups --> Find the Security Group (Use the security group ID you recorded use search to filter) --> Select SG
+Add rule --> NFS (Select NFS Protocol) --> attach node instances security group
+3. install drivers, EFS drivers
+https://github.com/kubernetes-sigs/aws-efs-csi-driver
+in Readme.md
+To install the driver using images stored in the private Amazon ECR registry
+Download the manifest. Replace release-X.X with your desired branch. We recommend using the latest released version. For a list of active branches, see Branches.
+kubectl kustomize \
+    "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/ecr/?ref=release-2.0" > private-ecr-driver.yaml
+
+here it is directed to private-ecr-driver.yaml but in video he has directed them to public-ecr-driver.yaml
+vim private-ecr-driver.yaml (just no of yaml files in this yaml file)
+Apply the manifest (i.e. install the drivers)
+kubectl apply -f private-ecr-driver.yaml
+4. check IAM access to the instances
+AmazonEFSCSIDriverPolicy
+select the instance --> click on iam role --> it will direct to the iam role --> Attach AmazonEFSCSIDriverPolicy
+
+cd k8-resources/storage/
+kubectl apply -f 03-efs-static.yaml
+persistentvolume/efs-static created
+kubectl get pv
+NAME         CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+efs-static   5Gi        RWO            Retain           Available                          <unset>                          34s
+
+kubectl apply -f 03-efs-static.yaml
+persistentvolume/efs-static configured
+persistentvolumeclaim/efs-static-claim created
+
+kubectl get pvc
+NAME               STATUS   VOLUME       CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+efs-static-claim   Bound    efs-static   5Gi        RWO                           <unset>                 43s
+
+kubectl apply -f 03-efs-static.yaml
+persistentvolume/efs-static configured
+persistentvolumeclaim/efs-static-claim unchanged
+pod/efs-app created
+
+kubectl apply -f 03-efs-static.yaml
+persistentvolume/efs-static configured
+persistentvolumeclaim/efs-static-claim unchanged
+pod/efs-app configured
+service/efs-static created
+
+kubectl get svc
+NAME         TYPE           CLUSTER-IP     EXTERNAL-IP                                                               PORT(S)        AGE
+efs-static   LoadBalancer   10.100.80.12   a549a00d84da2426f803e61354ac691d-1160647644.us-east-1.elb.amazonaws.com   80:30534/TCP   24s
+kubernetes   ClusterIP      10.100.0.1     <none>                                                                    443/TCP        3h8m
+
+
+
+26:14
+
+ 
+
+
+
+
