@@ -8,7 +8,7 @@ What is computer?
 	Processor
 	Ram
 	Storage
-	OS = Graphics + Kernel = Linux not windows (OS for Servers)
+	OS = Graphics + Kernel = Linux not windows (OS for Servers no Grpahics)
 	Why servers will not have graphics 
 
 Laptop/Desktop = Internet surfing + Development + Songs + movies = daily use
@@ -72,7 +72,7 @@ parents = they will wait until JUL 3rd week
 
 everybody will analyse results.
 
-100 --> 30 members got 31% (33% is needed to Pass), 69% (69% passed)
+100 --> 31 members got 31% (33% is needed to Pass), 69% (69% passed)
 
 unit-II --> 72%
 III --> 75%
@@ -146,7 +146,7 @@ teachers = testing team
 
 developers, testers, clients
 
-2 or 3 years
+2 or 3 years (Project Duration)
 
 developers = no development from DAY-1
 testers = no testing from DAY-1
@@ -225,10 +225,10 @@ Enter your First Name
 
 DAY-1 ask testing team to test this small code
 
-positive and negative
+positive and negative (test cases)
 
-1. enter the name in 20 char
-2. enter the numbers in the name field
+1. enter the name in 20 char (positive)
+2. enter the numbers in the name field (negative)
 
 10 test cases --> 
 
@@ -238,12 +238,15 @@ Developers and testers will communicate
 
 if the code developed is built and tested on the same day then you can call it as DevOps ==> We use tools to make it fast and reliable
 
+Businesses will aim for
 1. Faster releases to the market
 2. Less defects
 
+Increasing this speed and accuracy is DevOps Process
+
 amazon vs flipkart
 -------------------
-every 11.2sec they do one release, fully automated with less defects
+every 11.2sec they do one release, fully automated with less defects (amazon is winner)
 
 manual testing --> automated testing
 build and deployment --> 
@@ -251,16 +254,30 @@ build and deployment -->
 deployment --> automate
 ------------
 1.0 --> running
-
+deployment means
 download the new version
 stop the sytem
 remove old version
-instal new version
+install new version
 start the system
 
 DevOps and cloud two wheels for a bike
 --------------------------------------
+if you say i will use only DevOps in on premise then you will not get 100% Automation.
+if you say i am in cloud but i will not use DevOps again you will not get 100% Automation.
+For Complete Automation DevOps and Cloud is So much Important. 
 
+Newly Starting Companies are not looking rent a room, install servers, provide power, keep a security guard and put Air Conditioners. No one are looking to do that. Because that is more costly for them and that is not there responsibility.
+
+if you starting a restaurant business then restaurant is your main focus. putting servers in a room that is additional responsibilty. even if you lose some money we should focus on our responsibility that is the achievement of cloud.
+
+What is DevOps?
+---------------
+DevOps is a process improvement. What DevOps say is whatever the code is developed by the developer that should be built and test on the same day.
+
+What is improving here using DevOps?
+------------------------------------
+We improve communication between the communication between the developers and testers their efficieny becoming more. There are no fights between the teams. Product delivery is 100% accurate. These are the advantages we got through DevOps.
 
 Server
 ---------
@@ -269,7 +286,7 @@ Super computers also use linux
 
 everything is command here --> everything is text
 
-Linux can run for years without restart
+Linux can run for years without restart (if a server restarts site will down and customers cannot access your site)
 less power
 less bandwidth
 less memory
@@ -281,12 +298,22 @@ We will start learning Linux
 AWS account create --> free trail
 500-1000rs per month
 if more bill --> ask AWS they will refund
-1Lakh --> please refund
+1 Lakh --> please refund
 
-57:49
+who owns the debit card
+use the same name on the card, for email, firstname and lastname also
+and address also same as bank debit card address
+and check online usage is enabled or not for debit card
 
+1 year (free trial) --> not everything is free
 
+8GB RAM is mandatory for this course
 
+Linux --> vim editor, cut and awk, user management, package management
+Resume is not 1 day task it is continous task
+
+core values of the concepts will never change learn concepts not tools
+now jenkis few years some other so learn concept not tool
 
 
 
