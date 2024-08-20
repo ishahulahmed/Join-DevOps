@@ -137,6 +137,8 @@ kubectl --> to manage containers in kubernetes cluster
 eksctl install
 https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-eksctl.html
 (just google eksctl install and go to aws documentation link in that use linux)
+eksctl version --> To Check eksctl version
+
 
 kubectl install
 https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
