@@ -325,4 +325,5 @@ rm -r --> recursive (only rm is used for file) (rm -r for directories with and w
 rmdir --> deletes only empty directory, fails when it has files inside
 
 mkdir --> make directory
-	
+
+DevSecOps means nothing two scanning tools will be added that's it.
