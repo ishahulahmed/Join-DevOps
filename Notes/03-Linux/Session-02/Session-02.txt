@@ -232,14 +232,57 @@ In Linux Server Everythign is Command.
 
 command-name <options> <inputs>
 
+pwd --> present working directory
+
+uname --> outputs the name of the operatins system you are using
+
+uname --help (for other options with uname command)
+uname -a (if like a letter only one hyphen) (print all information)
+uname --all (if like a word then two hyphens need to provided) (This also print all information)
+
+uname --help
+Usage: uname [OPTION]...
+Print certain system information.  With no OPTION, same as -s.
+
+  -a, --all                print all information, in the following order,
+                             except omit -p and -i if unknown:
+  -s, --kernel-name        print the kernel name
+  -n, --nodename           print the network node hostname
+  -r, --kernel-release     print the kernel release
+  -v, --kernel-version     print the kernel version
+  -m, --machine            print the machine hardware name
+  -p, --processor          print the processor type or "unknown"
+  -i, --hardware-platform  print the hardware platform or "unknown"
+  -o, --operating-system   print the operating system
+      --help     display this help and exit
+      --version  output version information and exit
+
+GNU coreutils online help: <http://www.gnu.org/software/coreutils/>
+For complete documentation, run: info coreutils 'uname invocation'
+
+command --help
+man command (man means manual of particular command)
+
+ls --help
+man ls
+
 ls --> list subdirectories
+
+clear --> To Clear Terminal
+history --> Till now used commands
+
 
 /home/ec2-user --> default folder when logged in
 
 cd --> change directory
 
-/ root directory
-/home/ec2-user
+/ --> root directory
+/home/ec2-user --> defualt directory --> if you type cd enter
+
+cd .. (one step back)
+drwxr-xr-x  (d directory)
+-rw-r--r--  (- file)
+lrwxrwxrwx  (l link)
 
 ls -l --> long format
 ls -lr --> reverse alphabetical order
@@ -247,7 +290,12 @@ ls -lt --> latest files
 ls -ltr --> starts from old files
 ls -la --> all files and directory including hidden
 
-CRUD --> Create Read Update Delete
+hidden files and directories start with . (dot)
+
+CRUD --> Create Read Update Delete (Entire Software will be based on CRUD Operations Only)
+facebook --> Create User --> Update User --> Read User Information --> Delete User
+Even In Linux CRUD will be applicable
+Linux is case-sensitive
 
 ls --> read
 I want to create files folder
@@ -255,20 +303,26 @@ I want to create files folder
 create file
 ---------------
 touch <file-name> --> this will create a file
+touch sample
+
 update --> enter info into file
 cat > sample
-entr the text you want
+entr the text you want (in the prompt)
 once over click enter and ctrl+d
+
+To read the updated file cat file-name
+cat sample
 
 > --> replace old content
 >> --> append/add to the old content
 
+use tab for autocompletion
+
 Delete
 ----------------
-rm  <file-name>
-rm -r --> recursive
+rm  <file-name> (rm sample)
+rm -r --> recursive (only rm is used for file) (rm -r for directories with and without files init)
 rmdir --> deletes only empty directory, fails when it has files inside
 
 mkdir --> make directory
-59:08
 	
