@@ -24,7 +24,7 @@ EBS vs EFS
 3) EBS is used for database applications. so, less latency.
 4) EFS is useful to keep the shared files like images etc. Except Database.
 5) EBS is a fixed storage. EFS is elastic until 47.9 TB. 
-   (While the maximum size of an EBS volume can be up to 16 TB, EFS volume sizes are practically unlimited. The maximu size of a file in EFS is 47.9 TB.
+   (While the maximum size of an EBS volume can be up to 16 TB, EFS volume sizes are practically unlimited. The maximum size of a file in EFS is 47.9 TB)
 
 EBS
 ----
@@ -299,7 +299,7 @@ kubectl get pvc -n expense
 NAME    STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
 mysql   Pending                                      expense-ebs    <unset>                 14s
 
-kubectl described pvc mysql -n expense
+kubectl describe pvc mysql -n expense
 Name:          mysql
 Namespace:     expense
 StorageClass:  expense-ebs
@@ -329,12 +329,231 @@ kubens expense
 Context "i-004d50756726a5e72@expense-1.us-east-1.eksctl.io" modified.
 Active namespace is "expense".
 
-StatefulSet
+StatefulSet --> used for stateful applications i.e which should have some storage.
+Deployment --> used for stateless applications i.e usually frontend and backend
+
+kuberentes was designed for stateless applications. but, since kubernetes got too much popualar for placing databases also in kubernetes they designe StatefulSet. but, in reality now also we don't use databases in kubernetes.
+
+DB Cluster --> MyQL Master --> MySQL Node --> CUD Operation(here Read no need) --> Node Should be aware of other nodes (See Diagram)
+
+while dealing db clusters, one node should be aware of other nodes
+
+cd k8-resources
+kubens default
+kubectl apply -f 17-deployment.yaml
+deployment.apps/nginx created
+service/nginx created
+
+kubectl get pods
+NAME                     READY   STATUS    RESTARTS   AGE
+nginx-68fcf7b7bf-2ddkp   1/1     Running   0          29s
+nginx-68fcf7b7bf-44bql   1/1     Running   0          29s
+nginx-68fcf7b7bf-8b8zd   1/1     Running   0          29s
+nginx-68fcf7b7bf-s8lc6   1/1     Running   0          29s
+nginx-68fcf7b7bf-zmh4b   1/1     Running   0          29s
+
+kubectl get svc
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.100.0.1      <none>        443/TCP   4h12m
+nginx        ClusterIP   10.100.32.135   <none>        80/TCP    52s
+
+kubectl apply -f 02-pod.yaml
+pod/nginx created
+
+nginx pod --> nginx service --> multiple replicas (see diagram)
+
+kubectl exec -it nginx -- bash
+root@nginx:/# curl nginx (from here to nginx service --> form service to pod)
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+root@nginx:/# apt update
+root@nginx:/# apt install dnsutils
+root@nginx:/# nslookup nginx
+;; Got recursion not available from 10.100.0.10
+Server:         10.100.0.10
+Address:        10.100.0.10#53
+
+Name:   nginx.default.svc.cluster.local
+Address: 10.100.32.135 --> service IP
+;; Got recursion not available from 10.100.0.10
+
+nslookup nginx (here we will get ip of service with name nginx)
+
+kuectl get svc
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.100.0.1      <none>        443/TCP   4h26m
+nginx        ClusterIP   10.100.32.135   <none>        80/TCP    15m
+
+kubectl get pods
+NAME                     READY   STATUS    RESTARTS   AGE
+nginx                    1/1     Running   0          14m
+nginx-68fcf7b7bf-2ddkp   1/1     Running   0          15m
+nginx-68fcf7b7bf-44bql   1/1     Running   0          15m
+nginx-68fcf7b7bf-8b8zd   1/1     Running   0          15m
+nginx-68fcf7b7bf-s8lc6   1/1     Running   0          15m
+nginx-68fcf7b7bf-zmh4b   1/1     Running   0          15m
+
+kubectl exec -it nginx-68fcf7b7bf-2ddkp -- bash
+root@nginx-68fcf7b7bf-2ddkp:/# apt update
+root@nginx-68fcf7b7bf-2ddkp:/# apt install dnsutils -y
+root@nginx-68fcf7b7bf-2ddkp:/# nslookup nginx
+;; Got recursion not available from 10.100.0.10
+Server:         10.100.0.10
+Address:        10.100.0.10#53
+
+Name:   nginx.default.svc.cluster.local
+Address: 10.100.32.135
+;; Got recursion not available from 10.100.0.10
+
+Remember for database we have to give StatefulSet not Deployment
+
+cd ../k8-expense-volumes
+kubens expense
+kubectl apply -f mysql/manifest.yaml
+persistentvolumeclaim/mysql unchanged
+statefulset.apps/mysql created
+
+kubectl get pods
+NAME      READY   STATUS              RESTARTS   AGE
+mysql-0   1/1     Running             0          55s
+mysql-1   0/1     ContainerCreating   0          35s
+
+watch kubectl get pods (it will watch)
+
+pods are created with -0, -1 in statefulset. because statefulset should keep the pod indentiy
+pods in deployment are created at a time. but pods in sateful will be created in orderly manner
+(it will create pods after the 1st one comes ito running then next one is created)
+
+statefulset must have headless service, what is headless service?
+
+a service which will not have cluster ip is called headless.
+
+while dealing db clusters, one node should be aware of other nodes
+
+kubectl get pods
+NAME      READY   STATUS              RESTARTS   AGE
+mysql-0   1/1     Running             0          9m20s
+mysql-1   0/1     ContainerCreating   0          9m
+(here mysql-1 pod is Strill Creating we need to look into issue)
+
+kubectl describe pod mysql-1
+Events:
+  Type     Reason              Age   From                     Message
+  ----     ------              ----  ----                     -------
+  Warning  FailedAttachVolume  12m   attachdetach-controller  Multi-Attach error for volume "pvc-4a5191d3-5443-4a5f-9f92-ccb36798350d" Volume is already 
+                                                              used by pod(s) mysql-0
+
+  Normal   Scheduled           12m   default-scheduler        Successfully assigned expense/mysql-1 to ip-192-168-29-18.ec2.internal
+
+kubectl get pods -o wide
+NAME      READY   STATUS              RESTARTS   AGE   IP               NODE                            NOMINATED NODE   READINESS GATES
+mysql-0   1/1     Running             0          16m   192.168.18.202   ip-192-168-4-5.ec2.internal     <none>           <none>
+mysql-1   0/1     ContainerCreating   0          15m   <none>           ip-192-168-29-18.ec2.internal   <none>           <none>
+
+here second went to ip-192-168-29-18.ec2.internal. In EBS Condition is Availability Zone of Pod and Volume Should be Same. That is why it is not Running.
+we need to use nodeSelectors
+nodeSelector: 
+  topology.kubernetes.io/zone: us-east-1a
+
+let us do cleanup to for creating again
+
+kubectl delete -f mysql/manifest.yaml
+persistentvolumeclaim "mysql" deleted
+statefulset.apps "mysql" deleted
+
+here EBS Volumes will not be delete automatically. since it is Retain Policy. We need to delete them manually. so, delete them manually.
+
+kubectl delete pv pvc-4a5191d3-5443-4a5f-9f92-ccb36798350d
+persistentvolume "pvc-4a5191d3-5443-4a5f-9f92-ccb36798350d" deleted
+
+now delete manually the volume in aws EBS (delete volumes whose Volume state is Available)
+
+kubectl get nodes --show-labels
+(used for nodeSelector in YAML file)
+
+kubectl apply -f mysql/manifest.yaml
+persistentvolumeclaim/mysql created
+statefulset.apps/mysql created
+service/mysql created
+
+watch kubectl get pods
+
+kubectl get pods
+NAME      READY   STATUS              RESTARTS   AGE
+mysql-0   1/1     Running             0          2m59s
+mysql-1   0/1     ContainerCreating   0          2m47s
 
 
-1:03:20
+still issue not resolved
+
+kubectl describe pod mysql-1 (same error again)
+Events:
+  Type     Reason              Age   From                     Message
+  ----     ------              ----  ----                     -------
+  Warning  FailedAttachVolume  12m   attachdetach-controller  Multi-Attach error for volume "pvc-4a5191d3-5443-4a5f-9f92-ccb36798350d" Volume is already 
+                                                              used by pod(s) mysql-0
+
+  Normal   Scheduled           12m   default-scheduler        Successfully assigned expense/mysql-1 to ip-192-168-29-18.ec2.internal
 
 
+Diagram
+--------
+One Node --> 2 Pods in One Node --> But 2 Different Volumes for Pod in same node --> it is not possible  --> we need to create different node
+This is the issue he said but don't know. in next class he will explain.
+
+But Mulit-Attach Error Means Pods in the same node are trying to attach to same volume. it seems pods from different nodes can connect to same volume but not but not pods in same node can attach to same volume. (My-Analogy)
+
+StatefulSet Vs Deployment
+--------------------------
+a) Statefu/Stateless applications:
+    i) StatefulSet - Stateful
+   ii) Deployment - Stateless
+
+b) Pod Interchangeability:
+    i) StatefulSet - Pods in a StatefulSet are not interchangeable. it's expected that each Pod has a specific role. such as always running as a primary or     
+                     read-only replica for a database application.
+   ii) Deployment - All Pods are indentical. so they're interchangeable and can be replaced at any time.
+
+c) Rollout ordering:
+    i) StatefulSet - Pods are guaranteed to be created and removed in sequence. When you scale down the StatefulSet. Kubernetes will terminate the most 
+                     recently created Pod.
+   ii) Deployment - No ordering is supported. When you scale down the Deployment Kubernetes will terminate a random Pod
+
+d) Storage access:
+    i) Stateful Set - Each Pod in the StatefulSet is assigned its own Persistent Volume (PV) and Persitent Volume Claim (PVC).
+   ii) Deployment - All Pods share the same PV  and PVC
+
+Issue
+-----
+a) He gave one analogy
+b) I too predicted one analogy
+c) In differences as per sorage access point. we have not created different PV and PVC for each pod. we created only one.
+
+In next class we will know what is the issue?
+
+
+In real projects we will not place databases like mysql etc in kubernetes. Mostly, we will keep Elastic Search, rabbitMQ, Prometheus etc main database containing details like user data, mobile no, email address, user transactios etc we will not keep in kubernetes it is highly risky.
 
 
 
