@@ -1,5 +1,5 @@
 Session Overview
-----------------
+-----------------
 a) Jenkins Installation
 b) Freestyle job
 c) Pipeline job
@@ -8,6 +8,56 @@ e) Options
 f) Master agent architecture
 g) Parameters
 h) Post section
+
+jenkis.io --> Documentation --> Installing Jenkins --> Linux --> Red Hat/Alma/Rocky
+
+Long Term Support Release
+---------------------------
+Here, I have sudo for every command as per jenkins documentation. but, you can just use sudo su - command and execute commands without out sudo for every command.
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+This is not working may be some OS Issue Siva Said Giving Error as
+--2024-08-26 11:41:26--  https://pkg.jenkins.io/redhat-stable/jenkins.repo
+Resolving pkg.jenkins.io (pkg.jenkins.io)... 146.75.34.133, 2a04:4e42:78::645
+Connecting to pkg.jenkins.io (pkg.jenkins.io)|146.75.34.133|:443... connected.
+GnuTLS: One of the involved algorithms has insufficient security level.
+Unable to establish SSL connection.
+
+So, Siva kept this https://pkg.jenkins.io/redhat-stable/jenkins.repo (go to this url and copy content and use vim) manually in /etc/yum.repos.d/
+cd /etc/yum.repos.d/
+vim jenkins.repo
+[jenkins]
+name=Jenkins-stable
+baseurl=http://pkg.jenkins.io/redhat-stable
+gpgcheck=1
+
+save the above content
+
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+sudo yum upgrade (it will take lot of time and not recommended also)
+# Add required dependencies for the jenkins package
+sudo yum install fontconfig java-17-openjdk (java is mandatory) (use -y for auto approve)
+sudo yum install jenkins (-y at the end for auto approve)
+sudo systemctl daemon-reload
+
+Start Jenkins
+--------------
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+
+You Can Use Terraform Module or Shell Script to Install Jenkins
+
+In browser your instance public-ip:8080
+44.202.4.110:8080
+You will jenkins sign-in page with path to find your password /var/lib/jenkins/secrets/initialAdminPassword 
+
+cat /var/lib/jenkins/secrets/initialAdminPassword
+de93b0c8fda042d1afce1c8084f7c24e
+
+select install suggested plugins
 
 
 In Jenkins everything is treated as a job.
@@ -121,3 +171,5 @@ pipeline{
 }
 
 post section is after stages section
+
+8:45
