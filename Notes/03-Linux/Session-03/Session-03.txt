@@ -7,15 +7,21 @@ launched EC2
 connected
 practiced few commands
 
+rm daws-78s.pem daws-78s.pub (removing more than one file at a time)
+
 copy
 ----------
 select the file | ctrl+c + ctrl+v
 
 cp <source-file> <destination-path>
 
-/etc --> passwd
+/etc --> passwd (there is a file in /etc named paasswd)
 
+cp /etc/passwd . (in linx . means current working directory)
 cp /etc/passwd /home/ec2-user/
+cp /etc/passwd users (copying passwd file from /etc as users in current working directory)
+cp /etc/passwd devops/users (copying passwd file to devops folder with name as users)
+
 
 cut
 -----------
@@ -23,20 +29,74 @@ select the file | ctrl+x + ctrl+v
 
 mv <source-file> <destination-path>
 
+mv sample devops/ (moving sample file to devops folder)
+
+mkdir cloud
+cd cloud
+touch example
+cd ..
+
+cp cloud devops (Trying to copy cloud folder to devops this will not copy any files)
+cp: omitting directory ‘cloud’
+
+cp -r cloud devops (These will copy recursively entire cloud folder and its files into devops folder)
+
+mv cloud devops (moves cloud folder into devops folder)
+
+mv users user-list (Renaming)
+(here moving the technically inthe same directory there is  no user-list. so, here we are renamis users as user-list)
+
 grep
 -----------
 used to search for a word in file
 
 grep <word-to-find> <which-file>
 
+grep ec2-user user-list
+ec2-user:x:1000:1000:EC2 Default User:/home/ec2-user:/bin/bash
+
+grep ec2-User user-list (no Output Since Linux is case sensitive and there is no word with U capital in ec2-User)
+
+grep -i ec2-User user-list (here we are telling with -i be case insensitive)
+ec2-user:x:1000:1000:EC2 Default User:/home/ec2-user:/bin/bash
+
+Piping
+-------
+1st Pipe Output will be Second Pipe Input (see diagram)
+| -> pipe symbol
+
+cat user-list | grep ec2-user (here file name not given but output of 1st command acted as input of second command)
+ec2-user:x:1000:1000:EC2 Default User:/home/ec2-user:/bin/bash
+
 curl and wget
-------------
+---------------
+in windows --> example git bash download --> go to git bash site --> click on downloads --> click on git bash download link
+in linux we use wget
+
+wget -> web get 
 wget <file-url>
 https://github.com/git-for-windows/git/releases/download/v2.44.0.windows.1/Git-2.44.0-64-bit.exe
 
 wget is used to download files and folder or softwares into linux server
 
 curl is used to get the text directly on to the terminal
+
+curl <file-url>
+curl git-hub-file-raw-url (use git hub raw url if use direct file ure it will get along with contents it html, css and js structure)
+curl https://raw.githubusercontent.com/daws-78s/notes/main/session-02.txt | grep ls
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  3824  100  3824    0     0  42446      0 --:--:-- --:--:-- --:--:-- 42966
+ls --> list subdirectories
+ls -l --> long format
+ls -lr --> reverse alphabetical order
+ls -lt --> latest files
+ls -ltr --> starts from old files
+ls -la --> all files and directory including hidden
+ls --> read
+
+wget https://raw.githubusercontent.com/daws-78s/notes/main/session-02.txt (This will download the file)
+
 
 cut and awk
 ------------
@@ -121,3 +181,5 @@ chmod 761
 755
 user --> full
 group --> rx
+
+28:30
