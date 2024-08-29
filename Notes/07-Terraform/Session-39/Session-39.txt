@@ -243,7 +243,10 @@ rebase
 conflicts
 branching strategy
 
+SonarQube covers both static code analysis and SAST.
+DAST tools is not free and high cost so we will not cover but sonarqube and sast we will discuss.
 
+Do not initialise git in sub directories again if you have initialised git in main directory already.
 rm -rf .git
 git init
 git remote add origin <url>
