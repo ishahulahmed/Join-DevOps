@@ -173,16 +173,70 @@ Host github.com
 	User git
 	IdentityFile ~/.ssh/github
 
-here User is git. if you see any repository ssh url you will have user as git.
-git@github.com:ishahulahmed/Join-DevOps.git (starting is user-name which is git)
+here User is git. if you see any repository in github ssh url will have user as git.
+For Identity file you need to pass Private Key. You can place anywhere but give correct path.
+git@github.com:ishahulahmed/Join-DevOps.git (git is user-name)
+git@github.com:ishahulahmed/Join-DevOps.git (github.com is HostName)
+in our config file we gave Host as github.com which act as a alias to our HostName and to identify our respective key in the list of keys in config file.
 
-For Identity file you need to pass Private Key.
+
 
 If you set config file correctly now you can clone repos using SSH.
 cd /d/devops/
-git clone git@github.com:ishahulahmed/Join-DevOps.git (cloning using SSH)
+git clone git@github.com:ishahulahmed/Join-DevOps.git (cloning using SSH) (here User@Host since user is git and host is github.com in our config file)
+User@Host not User@HostName
 
-	
+if in our config file we gave
+Host 78s
+      HostName github.com
+      User git
+      IdentityFile ~/.ssh/github
+
+cd /d/devops/
+git clone git@github.com:ishahulahmed/Join-DevOps.git (this will not work and through an error since Host name is 78s)
+git clone git@78s:ishahulahmed/Join-DevOps.git (this will work)
+
+in git every repository will have 
+User as git
+HostName not Host as git@github.com
+Example SSH URL of My Join-DevOps Repo is git@github.com:ishahulahmed/Join-DevOps.git
+
+But for SSH Authentication we have to provide User@Host not User@HostName
+siva gave Host as github.com because for easy cloning and making changes to repository as we are beginners. we need to be careful provide Host not HostName.
+
+Don't give same key to multiple github accounts.
+
+Here, Advantage is you can manage multiple Accounts using config file. For Example.
+# joindevops
+Host  github.com
+     HostName github.com
+     User git
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/daws-76s-github
+
+# joindevops
+Host  bitbucket.org
+     HostName bitbucket.org
+     User git
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/daws-76s-github
+
+# msivakmreddy
+Host  github.com-m
+     HostName github.com
+     User git
+     PreferredAuthentications publickey
+     IdentityFile ~/.ssh/msivakmrreddy
+
+# techworldwithsiva
+Host  github.com-j
+     HostName github.com
+     User git
+     PreferredAuthenticatios publickey
+     IdentityFile ~/.ssh/techworldwithsiva
+
+Tommorow we will learn
+------------------------	
 branches
 merge
 rebase
