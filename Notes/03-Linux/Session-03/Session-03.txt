@@ -102,14 +102,18 @@ cut and awk
 ------------
 https://raw.githubusercontent.com/daws-78s/notes/main/session-02.txt
 
-Siva kumar reddy = siva, kumar, reddy
+Siva kumar reddy = siva, kumar, reddy [dividing using space]
 space is called as delimiter
 
-https: <empty> raw.githubusercontent.com daws-78s notes main session-02.txt
+https: <empty> raw.githubusercontent.com daws-78s notes main session-02.txt (if divide the above url using delimiter /)
 
 cut command is used to get the fragments of a text using delimiter
 
-cut -d "/" -f1
+cut -d "/" -f1 (-d is delimiter, f1 is first fragment)
+
+echo https://raw.githubusercontent.com/daws-78s/notes/main/session-02.txt | cut -d '/' -f1
+https:
+
 
 awk command
 -----------
@@ -117,12 +121,77 @@ awk command is used text processing..generally used to divide the text in column
 
 awk -F "/" '{print $1F}'
 
-awk -F "/" '{print $NF}'
+awk -F "/" '{print $NF}'  [here NF means nth fragment that is last fragment we don't need to calculate for last fragment]
+
+echo https://raw.githubusercontent.com/daws-78s/notes/main/session-02.txt |awk -F "/" '{print $NF}'
+session-02.txt
+
+sudo useradd shahul
+cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+systemd-coredump:x:999:997:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/sbin/nologin
+systemd-oom:x:995:995:systemd Userspace OOM Killer:/:/usr/sbin/nologin
+polkitd:x:994:993:User for polkitd:/:/sbin/nologin
+sssd:x:993:992:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/sbin/nologin
+chrony:x:992:991:chrony system user:/var/lib/chrony:/sbin/nologin
+maintuser:x:1000:1000:Local Maintenance User:/home/maintuser:/bin/bash
+ec2-user:x:1001:1001::/home/ec2-user:/bin/bash
+shahul:x:1002:1002::/home/shahul:/bin/bash
+
+
+cat /etc/passwd | awk -F ":" '{print $1F}'
+root
+bin
+daemon
+adm
+lp
+sync
+shutdown
+halt
+mail
+operator
+games
+ftp
+nobody
+systemd-coredump
+dbus
+tss
+systemd-oom
+polkitd
+sssd
+sshd
+chrony
+maintuser
+ec2-user
+shahul
+
+here AWK command is printing 1 Fragment based on the delimiter in every row and printing in column format when there are multiple lines in a file. You can print any column based on the delimter {print $NF} then it will print last column. 
+AWK advantages is it can get the nth fragment and it can divide the text into column format. still there are lot more we can do with awk but that is not necessary this enough for now.
 
 head and tail
 --------------
 head --> gives first 10lines of the file
+head user-list
+head -n 2 user-list (to get first 2 lines)
+
 tail --> last 10 lines of the file
+tail user-list
+tail -n 2 user-list (to get last 2 lines) (you can give number as per your wish)
 
 Editor
 ------------
@@ -130,10 +199,27 @@ vi and vim
 
 vim advanced version of vi
 
+Vim editor has 3 modes
+a) ESC Mode
+b) Colon Mode
+c) Insert Mode
+
 vim <file-name>
+
+when you first open a file with vim <file-name> it will be in ESC Mode. 
+If you Want to go to Colon Mode From ESC press Shift + : (colon)
+If You want to go back then again press ESC
+If you want to go to Insert Mode from ESC Mode then press i 
+If you want to go back to ESC Mode from Insert Mode then again press ESC
+But, you cannot go to colon mode to insert mode directly.
+if you want to go to colon mode to insert mode first esc then you are in ESC mode then press i then you are in insert mode.
+
+
 Colon/Command mode
----------------
-:q --> Quit, to come out of the file
+-------------------
+:q --> Quit, to come out of the file 
+(if you not written anything in the file just went in saw and come out) (if you write something then use quit then it will through error either to force  
+ quit or save and quite) (E37: No write since last change (add ! to override) )
 :q! --> force quit, dont save the changes, quit the file
 :wq --> write and quit
 :set nu
@@ -146,6 +232,18 @@ Colon/Command mode
 :%s/bin/BIN --> replace in every line, but only first occurence
 :<line-no>s/<word-to-find>/<replace-word>/g --> first occurence in that line, if you want global(all occurences in that line) just give g
 :%s/<word-to-find>/<replace-word>/gi --> all occurences in the file
+
+:wq vs :wq!
+-------------
+In Vim, both :wq and :wq! are commands used to save changes and exit the editor, but there's a key difference between them:
+
+1. :wq: This command stands for "write and quit." It saves the changes to the file and then exits Vim. If the file is writable and there are no issues, this command will work smoothly. If the file has been modified in a way that could prevent writing (e.g., if it's read-only), Vim will prompt an error.
+
+2. :wq!: The ! after wq forces the write and quit operation. This command will attempt to save the changes and exit Vim even if the file is read-only or if there are other issues that might prevent writing normally. Essentially, :wq! overrides file write restrictions.
+
+In summary:
+- Use :wq for standard save and exit.
+- Use :wq! to force save and exit, overriding any write protection on the file.
 
 Esc Mode
 ----------
@@ -182,4 +280,4 @@ chmod 761
 user --> full
 group --> rx
 
-28:30
+46:45
