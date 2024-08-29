@@ -152,14 +152,33 @@ pass private key at the time of authentication
 same process can be done with github
 Login github --> Settings --> SSH and GPG Keys
 
-ssh config
-.ssh --> create file config without any extension
+~  --> tilde symbol
+cd --> default home directory in my laptop 
+pwd --> /c/Users/shahu (default home directory)
+cd ~ --> you will go to same /c/Users/shahu default home directory
+~/.ssh --> /c/User/shahu/.ssh (.ssh is a hidden directory)
+
+cd ~/.ssh
+ssh-keygen -f github
+cat github.pub (copy this public key)
+
+SSH and GPG Keys --> New SSH key --> Tilte - MyLaptop-New -->Key type - Authentication Key --> Key (Paste Content)
+
+Since we are doing SSH authentication we need to create ssh config file in our laptop
+.ssh (in this folder) --> create file named config without any extension
 
 
 Host github.com
 	HostName github.com
 	User git
 	IdentityFile ~/.ssh/github
+
+here User is git. if you see any repository ssh url you will have user as git.
+git@github.com:ishahulahmed/Join-DevOps.git (starting is user-name which is git)
+
+For Identity file you need to pass Private Key.
+
+If you set config file correctly now you can clone repos using SSH.
 	
 branches
 merge
