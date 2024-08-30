@@ -342,3 +342,7 @@ others --> rx
 
 chmod 755 config
 -rwxr-xr-x 1 ec2-user ec2-user 3666 Aug 30 07:58 config
+
+if same file two people are accessing at a time if one person writes and saves the file. The other person needs refresh and write or reopen the file then write and save his work.
+
+I feel we can user :wq! force save.
