@@ -6,38 +6,53 @@ c) Rebase
 d) Merge vs Rebase
 e) Merge conflicts
 
+till we were in the main branch adding to the staging area, making local commits and then pushing to the remote repository.
+
 imp file --> duplicate the file
 do the changes
 review the changes
 test the file
 if good, then change in main file
 
-Git --> Single source of truth
+Git --> Single source of truth (Because we can make versions, give reviews and see who has made changes etc)
 
-CICD
-------
-Single paper --> write everything in single paper from all
+For Example Research Paper on CICD from Students
+-------------------------------------------------
+Two Options
 
-Multiple papers --> finally colloborate imp points into one paper
+a) Single paper --> write everything in single paper from all (all students will write in single paper)
 
-Colloboration
+b) Multiple papers --> finally colloborate imp points into one paper (all students write in different papers and imp points in one paper)
+
+so, second option is better.
+
+Colloboration --> This is about Collabration. So, if in a project more than one person is working then we should have collabration. In order to have this collaboration we have something called Branching.
 
 Branching
 -----------
-main --> points to Production, direct changes are not at allowed.
-through some review process
+main --> points to Production, direct changes are not at allowed. 
+through some review process (changes in main brnach only through review process)
 
 main --> feature branch
 
 do changes in feature branch --> get reviews --> run some tests --> scan the code
 
-feature --> main
+feature --> main (merge feature branch into main branch)
 
-everyone should create one branch for any change...
+everyone should create one branch for any change... (in a project everyone should create one branch)
 
 git log --oneline (you will get log in one line)
+83f3b7f (HEAD -> main, origin/main) started first with plain dosa
 
-4bd656fd136438832b47ed66a211797afc53b3fb --> SHA Code --> 40 chars 
+git log (will give full information)
+commit 83f3b7f48683c78c3ee2a504c225c9976051280e (HEAD -> main, origin/main)
+Author: ishahulahmed <shahulahmed1717@gmail.com>
+Date:   Sat Aug 31 12:29:59 2024 +0530
+
+    started first with plain dosa
+
+
+83f3b7f48683c78c3ee2a504c225c9976051280e --> SHA Code --> this is a algorithm --> 40 chars 
 (no matter how much big file we will give SHA algorithm will create a 40 charchters code)
 
 git - the stupid content tracker (content tracker means that's a key value pair)
@@ -45,16 +60,50 @@ git - the stupid content tracker (content tracker means that's a key value pair)
 
 key --> value
 
-4bd656fd136438832b47ed66a211797afc53b3fb --> current code in the workspace
+4bd656fd136438832b47ed66a211797afc53b3fb (key) --> current code in the workspace (value)
 
-echo "Hello World" | git hash-object --stdin --> prints sha code on the screen 
+echo "Hello World" | git hash-object --stdin --> prints sha code on the screen for this content  (here echo "hello World" is input to second command)
 (here for Hello World content you will same id anywhere if content changes id will change)
 (git using this SHA algorithm verifies whether content is changed or not according to content id will be generated)
 
 git cat-file <commit id> -p --> print the info about sha code
 
-git checkout -b --> create new branch and change the workspace into new branch (git checkout -b karam-dosa)
+git cat-file 83f3b7f48683c78c3ee2a504c225c9976051280e -p
+tree 50720f518454641b6b0496802cc5109cb9e3fcaa
+author ishahulahmed <shahulahmed1717@gmail.com> 1725087599 +0530
+committer ishahulahmed <shahulahmed1717@gmail.com> 1725087599 +0530
 
+started first with plain dosa
+
+Our dosa business has been successful and growing from now on direct changes in main branch is not allowed. We should be very careful before doing any change in our project.
+
+goto repository settings --> Click on Branches --> Click on Add classic branch protection rule 
+Branch name pattern --> main (input) --> click on check-box Require a pull request before merging (automatically under this Require approvals option will be enabled) --> Click on Create
+
+from now on in main branch no one can push directly.
+
+from now for any small change we have to create a branch make chages in it then merge with main branch.
+
+git checkout -b --> create new branch and change the workspace into new branch 
+git checkout -b karam-dosa
+Switched to a new branch 'karam-dosa'
+
+new branch means till now which is already existing we are duplicating it and putting it into new branch
+
+git log --oneline
+83f3b7f (HEAD -> karam-dosa, origin/main, main) started first with plain dosa
+(SHA Code will be same since no changes were made in the code only new branch created and it's first commit-id will be the last commit-id of main branch  
+ because that is where from we are starting)
+
+git add .; git commit -m "added karam to dosa"; git push origin karam-dosa (making changes in new branch)
+git add .; git commit -m "added oil to karam dosa"; git push origin karam-dosa
+
+git log --oneline
+6e64599 (HEAD -> karam-dosa, origin/karam-dosa) added oil to karam dosa
+3332287 added karam to dosa
+83f3b7f (origin/main, main) started first with plain dosa
+
+now, we want to merge this changes in main branch.
 After merging pull request in github you need to changes in local repository (that is you need to pull those changes in local repository also)
 git checkout main
 git pull (git pull origin main)
@@ -62,6 +111,85 @@ git pull (git pull origin main)
 whether to know whether a commit is merge commit or normal commit for merge commit there will be two parents for normal commits only one parent.
 the previous commit is the parent to the present commit in normal commit
 
+ChatGPT - Pull Request
+------------------------
+Creating a pull request (PR) for someone else’s repository is a common way to contribute to open-source projects or collaborate on code with others. Here’s a step-by-step guide on how to do it:
+
+ 1. Fork the Repository
+
+    First, you need your own copy of the repository to work on. This is done by forking the original repository.
+    a. Go to the repository’s page on GitHub.
+    b. Click the “Fork” button in the top right corner of the page.
+    c. GitHub will create a copy of the repository under your account.
+
+ 2. Clone Your Fork
+
+    Next, you need to get a local copy of your forked repository on your machine
+    a. Go to your forked repository on GitHub.
+    b. Click the “Code” button and copy the URL (use HTTPS or SSH depending on your preference).
+    c. Open a terminal (or Git Bash) and run the following command:
+       git clone <URL-of-your-fork>
+    d. Navigate to the repository directory:
+       cd <repository-name>
+
+ 3. Create a New Branch
+
+    It’s a good practice to create a new branch for your changes instead of working on the default branch.
+    a. Create and switch to a new branch:
+       git checkout -b <your-branch-name>
+
+ 4. Make Your Changes
+  
+    Edit the code, add features, or fix bugs as needed.
+
+    a. Make your changes to the codebase.
+    b. Stage the changes:
+       git add <changed-files>
+    c. Commit your changes:
+       git commit -m "Description of your changes"
+
+ 5. Push Your Changes
+
+    Push your changes to your forked repository on GitHub
+    a. Push to your branch:
+       git push origin <your-branch-name>
+   
+ 6. Create a Pull Request
+
+    Now, you need to create a pull request from your forked repository.
+    a. Go to your forked repository on GitHub.
+    b. Click on the “Pull Requests” tab.
+    c. Click the “New Pull Request” button.
+    d. Choose the base repository and branch you want to merge your changes into (usually the original repository’s main branch).
+    e. Choose your fork and branch as the head repository and branch.
+    f. Review your changes and add a title and description to explain what you’ve done.
+    g. Click “Create Pull Request.”
+
+ 7. Follow Up
+
+    - Monitor the pull request for any feedback or requests for changes from the repository maintainers.
+    - Make any necessary updates to your PR as requested.
+    - Communicate with the repository maintainers if needed.
+
+And that’s it! You’ve successfully created a pull request to contribute to someone else’s repository.
+
+git remote -v
+The output will show the remote repository URL, which often includes the owner’s username or organization.
+
+Two ways to create repository
+-----------------------------
+1) create a repository in github. clone that into your local system make changes i.e add files and push it to github.
+2) To send an existing content in a folder on your computer to github. navigate to that folder in git bash then    
+   git init
+   git add .
+   git commit -m "commiting locally"
+   git branch -M main (as it will create master branch we want to name as main)
+
+   create a repository in github and copy it's url then 
+   git remote add origin https://github.com/ishahulahmed/git-practise-fun.git (this is main we are now adding remote github repositry url)
+   git push -u origin main
+      	
+   
 Merge
 -------
 Merge
@@ -162,7 +290,7 @@ now you can raise pull request since conflicts are not showing
 then reiviewers will reiview your code and finally merged to main branch
 
 
-
+23:52
 
 
 
