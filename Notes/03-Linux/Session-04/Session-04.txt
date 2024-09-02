@@ -166,7 +166,8 @@ uid=1002(ramesh) gid=1004(testing) groups=1004(testing)
 
 until testing is there a primary group you cannot remove secondary group testing as well. you can add other secondary groups and remove them but not this secondary group which is also a primary.
 
-
+CRUD Operation
+---------------
 create user --> useradd 
 read user --> id or cat /etc/passwd
 modify user --> usermod -g or -aG <group-name> <user-name>
@@ -176,33 +177,132 @@ when employee leaving organisation
 ----------------------------------
 delete the user
 
+Process to delete a user
+--------------------------
 1. remove user from group
 2. delete the user
 
-ramesh --> testing
+ramesh --> testing (ramesh primary group we have changed to testing)
 userdel ramesh --> ramesh will be removed? what about ramesh group created by default.
 
 1. remove all his secondary groups
 2. change primary group to his own group.
 3. then delete the user
 
-if a new user have to login with his private key?
------------------------------------------------
-robert user with key based authentication
+userdel ramesh
+userdel: group ramesh not removed because it is not the primary group of user ramesh.
 
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDK9Ox5SMXHCSSf9K8pyoRmeOsYxk5y6TA2Agqn2yI4gjURxdiKYXNA21S7K+tLA3hMtBoqldT9o4FWYgZpLVxOQ8KyLXO/6TAZZcKSI3fVNaz40vaPHl84eILnbsaTZK0Sx7SrdcIpTCrccsDdfvHTu/cqD+MEhhZh0Ea0twUR9RFah7wKYNsAo7ev/bNFQD1TMt20DB9So0oyt04nMRMT0xZ+Dgs0QDhRHu+fZF4wQRPexYrKw2XMhjst0Hwicxa9DZNnJwUAsYVnEQzVsoSV+aSmmaAmRLk0ZfHLy+1RZ7/bSn3ukznXVBon2Kkrhly+twkdisrNcr8/49icT6laXyCROwMui6zKTZeo5n0ce7J46zNAsyo7nUs9wCNdnUPmkCEtb5l6G6Kh6PFu09lPDFF8wP/L/RL7kDx6sjO1yfB0hVqlxtkCJ+QreWbwqqTAJ9y5yTb76EuApmkVIWVEjvMiJ5+uMEMVRZgy0zDKCudrYSvCh39gmihm1AsswBC0I60+DD7gPZZbxmQqUzfFNLRbuEkWE5aUZTSe/HOS6UikD5mJHeBUglzX4v5WmwpHZZv4g/mEQ85QFWDgS8fVYRZ1RSt6uhiuo7gRQpjzyv0Zt1+LRzSCCDKNqwIsbgr4/SDpnlOoErIgl4PDN/TV/yKhtFnJvZ331QoiOpc1SQ== user@AshDexter-T480
+getent group --> you will see ramesh group so you have delete the group manaully
+
+groupdel ramesh (to delete group ramesh)
+
+Proper Way to delete a User let us take another example
+--------------------------------------------------------
+Raheem Joined our Organisation
+------------------------------
+useradd raheem
+id raheem
+uid=1002(raheem) gid=1002(raheem) groups=1002(raheem)
+usermod -g devops raheem
+id raheem
+uid=1002(raheem) gid=1003(devops) groups=1003(devops)
+usermod -aG testing raheem
+id raheem
+uid=1002(raheem) gid=1003(devops) groups=1003(devops) ,1004(testing)
+
+Raheem leaving our organisation
+--------------------------------
+gpasswd -d raheem testing
+id raheem
+uid=1002(raheem) gid=1003(devops) groups=1003(devops)
+usermod -g raheem raheem
+id raheem
+uid=1002(raheem) gid=1002(raheem) groups=1002(raheem)
+userdel raheem
+
+now, there is no user raheem and group raheem
+
+Till now, we have seen user password authentication. what if a new user have to login with his private key?
+------------------------------------------------------------------------------------------------------------
+now i am going to create robert user with key based authentication. 
+
+as i said every user will have their own public and private key.
+
+when robert join the company he will create his own pubic and private key.
+ssh-keygen -t rsa -b 4096 -f robert
+
+robert will send his public key to the adminstrative team. through email.
 
 
-mkdir .ssh
-authorized_keys
+robert public given to administrative team
+-------------------------------------------
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCUAgROf/YdViSjcvCk5kKWjWaq7wNReWuZpR8qo1QbOqduON+MnHEZ6ygYgF5K5QhXjp6FXetEU+54MStMvUaw6/C7mDhN3t6aQH2+J1lT3ezhekrUOG0+y7u1m3QYZ96rUSUSDiabXq/Vjorx44ggHRuWxZzKqb2Kpj4zH/B0qLQ2LoiklILzf/peCJqNCSq0dLMEFX+JXtH3aAoKlm0k0IBA4zMTF82+UOfgT/+zHPfzBPoo7k4AvaX2KJ5+k27pwqrtMEOvX0w+GguIQ78Ukj5YWW8DVsHzaf5HsLCeZ9W3CB+fTvDnKbchpnUpHDlQnaekgNqMv4B485TUyxjgOmwq2Fw8/ZvEZUe0J9kY1wphfqlv4QtxMCPsI85soi+QIRiPEAxKL6fomSXHMQIDSBl2ddOpnApC9Wwpe5jfhIFG4jtB/q2aHm1IDbrAW6o9S6Y+mqtJ5eCkLDpQIBIODpBzws/hmiciCy42kQFgJ/cgnRtr868EkK4xJec/98p2L0E9z6qZgjyrPkeAlDedAOKFUwjyjneUNDt+f6U3dBl+oeRtAEQOSuozkN+DGzB49KN55fXf6GIeajFM6973SPtXISyyRonHpPptl8dPWoWvIKMIK3TnssHkrPKXsGdDC0NRF2d9Wt7KcD6TbJHsgov+4RMenF/aRr6GUwxFaw== shahu@Shahuls-Laptop
+
+now administrative team will add this key to linux server.
+useradd robert --> we have i.e admin team created user robert which means home folder /home/robert is also created.
+cd /home/robert/
+ls -la
+mkdir .ssh (in user home folder there should be .ssh folder for ssh authentication purpose)
+ls -la
+drwxr-xr-x  2 root   root     6 Sep  2 12:40 .ssh (here permission should only be to robert not even to his group)
+chmod -R 700 .ssh
+ls -la
+drwx------  2 root   root     6 Sep  2 12:40 .ssh (here we have given permissions only to user. no access to groups and others)
+cd .ssh
+touch authorized_keys (in this authorized_keys we will place robert's public key without any mistakes or new line) (this is purely linux admin activity)
+vim authorized_keys (paste your public key and save)
+chmod 400 authorized_keys (do not give more than rw i.e 600 even to user)
 
 R 4
 W 2 
 X 1
 
+here, we took public-key from robert. went into his home-folder create a folder named .ssh. we created a file named authorized_keys and pasted public-key content in it.
+
+now, everything is ready permission have be set correctly. but still robert cannot log-in using ssh because ownership of .ssh folder is showing root.
+cd /home/robert
+ls -la
+drwx------  2 root   root    29 Sep  2 12:46 .ssh
+
+permission on a file or folder is different from ownership.
+command to change ownership
 chown <user>:<group>
+chown -R robert:robert .ssh (-R for recursive to include all files inside the folder)
 
 chown -R rober:robert .ssh
+
+ls -la
+drwx------  2 robert robert  29 Sep  2 12:46 .ssh 
+
+now, this folder only robert has access no other has access. inside this folder
+cd .ssh
+ls -la
+drwx------ 2 robert robert  29 Sep  2 12:46 .
+drwx------ 3 robert robert  74 Sep  2 12:40 ..
+-r-------- 1 robert robert 746 Sep  2 12:46 authorized_keys
+
+inside, this folder also only robert has access that too only read access he cannot even change the key. if lost his private key. he will send request to administrator. 
+
+let, us see now whether robert is able to login or not.
+go to the path were robert private key is located then 
+ssh -i robert robert@3.89.28.201
+
+robert, is now able to sucessfully login.
+
+in projects there might be key based authentication or password based authentication. generally there will be azure active directory with centralised login using SSO (Single Sign-On).
+When we join a company for our laptop they will give a username and password. so, in company whatever you open the same will be your username and password. with that username and password they will integrate linux-servers. so, there is some centralised management that is called IAM. [not aws iam here]
+
+here, for robert i want to give sudo access
+admin will with root access in server
+vim /etc/sudoers
+## Allow root to run any commands anywhere
+root    ALL=(ALL)     ALL
+robert  ALL=(ALL)     ALL
+
+so, in this file whose names are there they will get sudo access.
+
+let, us see whether robert is able to use root access
+ssh -i robert robert@3.89.28.201
 
 package management
 ----------------------
@@ -255,5 +355,4 @@ DNS
 facebook.com --> 11.45.67.89
 
 https://facebook.com:567
-
-26:58
+47:10
