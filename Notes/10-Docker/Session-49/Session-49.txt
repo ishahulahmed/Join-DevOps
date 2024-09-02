@@ -241,3 +241,8 @@ docker run -d -p <host-port>:<container-port> nginx
 (-d detaced -p port) (docker run -d -p 8000:80 nginx) 
 (container port is fixed host port is as your wish)
 (http://54.198.78.20:8000/ place this in browser you will se niginx welcome page)
+
+
+image has 2 infomration
+- user has to connect host port from there to container port
+- docker container enginer will check first in the local repo for image if not it will go and search in remote repo i.e docker hub
