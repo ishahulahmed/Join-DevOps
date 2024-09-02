@@ -215,7 +215,12 @@ docker stop <CID> --> container will stop running
 docker rm <CID> --> To remove a container
 docker rm -f <CID> --> To Forcefully remove container if it is showing error while removing container
 
-docker run = docker pull + docker create + docker run
+docker pull nginx --> pulls an nginx image from docker hub
+docker create nginx --> creates a container using nginx image that container will have container-id. 
+if you this command multiple times multiple containers with different container-ids will be create using nginx image
+docker start container-id --> it will start the respective container
+
+docker run = docker pull + docker create + docker start 
 
 docker rmi <IMAGE ID> --> To Remove a Image
 

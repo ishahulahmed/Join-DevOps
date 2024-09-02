@@ -15,53 +15,159 @@ tail
 touch
 
 command-name <options> <inputs>
--l, --list
--a, --all
+-l, --list (either use -l or --list) (if sigle charachter as option then use one hypen. if more than one charachter as option then use double hypen)
+-a, --all  (either use -a or --all) (if sigle charachter as option use one hypen. if more than one charachter as option then use double hypen)
+here -l, --list, -a, --all are options
+
+cp command will not work without inputs
+for few commands inputs is mandatory for few not mandatory like ls command.
 
 User management
 --------------------
+if there is a server and multiple users need to access it then  
 we need to create multiple user accounts
+employees will join teams and exit teams that's a continous process. instead of creating permissions separately for each user.
 we create groups/teams we add users to the group...
+only administrative team will have root access to server others will login as normal users.
 
 useradd <user-name>
 
 useradd ramesh
+useradd: Permission denied. (normal user cannot add another user they should have admin access i.e root access)
 
-/root --> landing location of root user.
+sudo su (su is super-user) (if you use sudo su then it will be in folder where used sudo su command)
+if you were in /tmp folder then if you use sudo su then it will land in the same folder
+pwd
+/home/ec2-user or /tmp wherever you were there at the time of usings
+with root access if you type cd and enter it's default location is /root
+
+
+sudo su - (if you use sudo su - then it's landing location will be /root and when you exit this mode it will go back to the folder where you were)
+pwd
+/root
+
+
+/root --> landing location of root user. (if you use sudo su -)
 sudo su -
+
+with root access you can create user
+useradd ramesh
+
 id <user-name> --> userid, user-name
+
+id ramesh (to check whether a user is added or not(=)
+uid=1002(ramesh) gid=1002(ramesh) groups=1002(ramesh)
+
 
 in linux, when you create user, by default a group will be created with same user-name
 
 /etc/passwd --> will have users info
-getent group will have group info
+cat /etc/passwd --> will show you all the users list in that specific server.
+
+getent group --> will have group info (here group only not group name) (no need cat just type getend group)
+
+i have created a user ramesh but to give his password
 
 passwd <user-name>
+passwd ramesh
+it will prompt for new password and re-type password then it will update it successfully
+passwd ramesh
+passwd: Only root can specify a user name. (root access need to update or add password)
+username should not be in password it is a recommendation not a rule.
 
-key based authentication, pub and private key
+here, we have added a user and given a password to him. how can this user login?
+till now we have used key based authentication, pub and private key
 
-/etc/ssh/sshd_config --> SSH configuration
+if you want to change this behaviour 
+/etc/ssh/sshd_config --> SSH configuration (this is SSH configuration file)
 
+vim /etc/ssh/sshd_config
+PasswordAuthentication yes (no users can login to server using password)
 
+sshd -t (To check if there is any error in sshd configuration file)
+(use this command from any where sshd -t not only in /etc/ssh/) (if no error it will not show anything)
+
+if i wrote wantedly fdfh like something in sshd_config file then type sshd -t you will get error
+/etc/ssh/sshd_confg: line 63: Bad configuration option: fdfhPasswordAuthentication
+/etc/ssh/sshd_confg: terminating, 1 bad configuration options
+
+if you made any changes in sshd file then check once with sshd -t command before logging out to the server. if there is bad configuration you cannot login again due to bad configuration. if it is only password based no other alternative.
+
+if you made any changes then you need to restart that particular service. here sshd service.
+systemctl restart sshd
+
+now admin will inform ramesh. his user is created and send him ip-address and username and password. 
+now ramesh will take gitbash since it not key based. he will login with password
+ssh ramesh@3.89.28.201
+ramesh@3.89.28.201's password: input-password
+your successfully login.
+[ ramesh@ip-172-31-37-108 ~ ]$ pwd
+/home/ramesh
+
+he is in his home folder /home/ramesh
+
+id ramesh
+uid=1002(ramesh) gid=1002(ramesh) groups=1002(ramesh)
+
+linux will have two groups
+gid=1002(ramesh) --> primary group
+groups=1002(ramesh) --> secondary or supplementary group
+
+i want to create a group devops
 groupadd devops
+
+getent group (you can see list of groups)
 
 I want to add ramesh to devops group..
 
-usermod -g devops ramesh -> adding ramesh to devops group as primary
+usermod -g devops ramesh -> adding ramesh to devops group as primary (-g is for primary group)
+
+id ramesh
+uid=1002(ramesh) gid=1003(devops) groups=1003(devops)
+
 
 linux should have only 1 primary group, can have multiple secondary groups
 
+for example i want to give ramesh temporarily access to testing team, he has to do some testing related activities.
 there will be a group called testing...
 
-groupadd testing
+groupadd testing (here we are create a group called testing. since it is not there in our server)
 
-usermod -aG testing ramesh
+usermod -aG testing ramesh (-a for append. G for Secondary group) (adding ramesh to testing group temporarily)
 
+id ramesh
+uid=1002(ramesh) gid=1003(devops) groups=1003(devops),1004(testing) (here testing also added as secondary group)
+
+now, ramesh had done his testing related activities
 gpasswd -d ramesh testing --> deleting ramesh user from testing group..
+
+id ramesh
+uid=1002(ramesh) gid=1003(devops) groups=1003(devops) (testing group removed)
+
 
 you can't remove primary group of linux user, you can only change/modify
 
-create user --> useradd
+when you create a user his username only be his primary-group and secondary-group
+when you change primary group his secondary group will also be same.
+
+usermod -g testing ramesh
+
+id ramesh
+uid=1002(ramesh) gid=1004(testing) groups=1004(testing)
+
+now, if you try to remove ramesh from testing secondary group
+
+gpasswd -d ramesh testing
+Removing user ramesh from group testing
+gpasswd: user 'ramesh' is not a member of 'testing'
+
+id ramesh
+uid=1002(ramesh) gid=1004(testing) groups=1004(testing)
+
+until testing is there a primary group you cannot remove secondary group testing as well. you can add other secondary groups and remove them but not this secondary group which is also a primary.
+
+
+create user --> useradd 
 read user --> id or cat /etc/passwd
 modify user --> usermod -g or -aG <group-name> <user-name>
 delete user
@@ -149,3 +255,5 @@ DNS
 facebook.com --> 11.45.67.89
 
 https://facebook.com:567
+
+26:58
