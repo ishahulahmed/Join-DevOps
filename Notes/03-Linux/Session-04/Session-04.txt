@@ -604,5 +604,6 @@ sudo systemctl status jenkins
 DNS
 facebook.com --> 11.45.67.89
 
-https://facebook.com:567
+https://facebook.com:567 (if not defualt port)
+users will remember facebook.com not port number that is why we use default port number.
 
