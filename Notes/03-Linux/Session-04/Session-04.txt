@@ -295,64 +295,314 @@ When we join a company for our laptop they will give a username and password. so
 here, for robert i want to give sudo access
 admin will with root access in server
 vim /etc/sudoers
-## Allow root to run any commands anywhere
-root    ALL=(ALL)     ALL
-robert  ALL=(ALL)     ALL
+## Same thing without a password
+# %wheel   ALL=(ALL) NOPASSWD: ALL
+robert ALL=(ALL) NOPASSWD: ALL
 
 so, in this file whose names are there they will get sudo access.
 
 let, us see whether robert is able to use root access
 ssh -i robert robert@3.89.28.201
+sudo useradd sachin [yes, robert is able to add another user using sudo access]
+id sachin
+uid=1003(sachin) gid=1005(sachin) groups=1005(sachin)
+
+But, in the interviews they will ask /etc/sudoers is a crucial file. do you need to go every time in to that file to give access.
+what we will do use we will add user to a group called wheel
+for example i am removing 
+robert ALL=(ALL) NOPASSWD: ALL 
+this from /etc/sudoers file
+
+successfully, removed robert from sudoers file. now, without touching sudoers file i can add robert to wheel group
+usermod -aG wheel robert
+id robert
+uid=1002(robert) gid=1002(robert) groups=1002(robert),10(wheel)
+
+1. either add in sudoers file
+2. or add to wheel group
+
+adding to wheel group is safe and easy.
+
+here, still adding to wheel group he will not get sudo access because we need to uncomment in sudoers file
+# %wheel  ALL=(ALL)   NOPASSWD: ALL
+
+after uncommenting the above line and commenting %wheel   ALL=(ALL)   ALL this line
+login to robert now try for sudo access
+ssh -i robert robert@3.89.28.201
+sudo useradd sivakumar [now it is working]
+id sivakumar
+uid=1004(sivakumar) gid=1006(sivakumar) groups=1006(sivakumar)
+
+another interview question where linux stores the password?
+cat /etc/shadow
+the password is encryptyed you cannot read that password
+for example 
+useradd ramesh
+passwd ramesh [give ramesh150 as password]
+
+now, go to 
+cat /etc/shadow
+ramesh:$6$aCR6r.i9cyQLq2r9$x2U3cIaQMhkIylGxKzN0dfUANmQL0u7l05Zo7pI./O/bebkrKhC8ZjrEDMd7MRBjB44aMBw8.k0W3c90A6P1e0:19969:0:99999:7:::
+(this is the encrypted password)
+
+where linux stores 
+users --> /etc/passwd
+passwed --> /etc/shadow
+
+this is enough for us.
 
 package management
 ----------------------
+in linux, if want to install a software we call it as package management generally.
+
+windows --> Software
+linux --> Package
+linux server --> go to some location (url) --> fetch the package --> install it.
+yum --> we use yum package manager to install packages in rhel 
+
+there are some games which won't run without java being installed or some websites which won't work without JavaScript beign enabled. in the same way
 in linux, one package may be depends on another package. olden days we have rpm
+rpm --> red hat package manager
 
 rpm we have to manually get the dependencies, install them and finally main package..
+(dependencies are the packages on which main packages is dependent)
 
 yum --> automatic dependencies management
 
-yum install git -y
+yum install git -y (-y for auto approve)
+(if i use this command first yum will install all dependencies of git i.e all packages or softwares on which git is depending then it will install git)
 
+for example
+yum install git 
+Dependencies resolved.
+============================================================================================================================================================
+ Package                                  Architecture             Version                                Repository                                    Size
+============================================================================================================================================================
+Installing:
+ git                                      x86_64                   2.43.5-1.el9_4                         rhel-9-appstream-rhui-rpms                    54 k
+Installing dependencies:
+ emacs-filesystem                         noarch                   1:27.2-9.el9                           rhel-9-appstream-rhui-rpms                   9.6 k
+ git-core                                 x86_64                   2.43.5-1.el9_4                         rhel-9-appstream-rhui-rpms                   4.4 M
+ git-core-doc                             noarch                   2.43.5-1.el9_4                         rhel-9-appstream-rhui-rpms                   2.9 M
+ perl-AutoLoader                          noarch                   5.74-481.el9                           rhel-9-appstream-rhui-rpms                    21 k
+ perl-B                                   x86_64                   1.80-481.el9                           rhel-9-appstream-rhui-rpms                   184 k
+ perl-Carp                                noarch                   1.50-460.el9                           rhel-9-appstream-rhui-rpms                    31 k
+ perl-Class-Struct                        noarch                   0.66-481.el9                           rhel-9-appstream-rhui-rpms                    22 k
+ perl-Data-Dumper                         x86_64                   2.174-462.el9                          rhel-9-appstream-rhui-rpms                    59 k
+ 
+Transaction Summary
+============================================================================================================================================================
+Install  67 Packages [I removed few dependency lines]
+
+how did yum know to fetch from which url?
+cd /etc/yum.repos.d
+ls -l
+-rw-r--r--  1 root root 1883 Sep  2 09:49 docker-ce.repo
+-rw-r--r--. 1 root root 1142 Aug 17  2023 epel-cisco-openh264.repo
+-rw-r--r--. 1 root root 1552 Aug 17  2023 epel-testing.repo
+-rw-r--r--. 1 root root 1453 Aug 17  2023 epel.repo
+-rw-r--r--  1 root root 4723 Jun  7 11:44 redhat-rhui-beta.repo.disabled
+-rw-r--r--  1 root root  467 Sep  2 07:36 redhat-rhui-client-config.repo
+-rw-r--r--  1 root root 6088 Jun  7 11:44 redhat-rhui-eus.repo.disabled
+-rw-r--r--  1 root root 5896 Sep  2 07:36 redhat-rhui.repo
+-rw-r--r--. 1 root root 5792 Feb 22  2024 redhat-rhui.repo.rpmsave
+
+cat docker-ce.repo
+you can see url's set into variables in that file.
+baseurl=https://download.docker.com/linux/rhel/$releasever/$basearch/stable (for each repo there are url's i just gave one)
+
+/etc/yum.repos.d here url's will be there. tommorow if we want to install jenkins or anyother package. first if we add url's here then yum can install those packages. yum can go and fetch those packages automatically.
+
+here we need to add all those repos
 /etc/yum.repos.d --> location of package URL's
 
-yum list installed --> installed packages
-yum list all --> all packages for this linux server
-available = all - installed
+yum install git -y (-y is for auto approve)
+yum remove git -y 
 
-cat /proc/cpuinfo
-cat /proc/meminfo
-cat /etc/os-release --> cat /etc/*release
-yum update
+In Ubuntu OS it may be apt install git -y
+in redhat yum newly dnf also came.
+
+yum list installed --> installed packages
+yum list installed | wc -l (wc is for word count -l is for lines) (run commnad as super user)
+538 --> output
+yum list all --> all packages for this linux server
+yum list all | wc -l (wc is for word count -l is for lines) (run commnad as super user)
+29758 --> output
+available = all - installed
+yum list available
+yum list available | wc -l (wc is for word count -l is for lines) (run commnad as super user)
+29215 --> output
+
+yum search mysql --> it will list all the packages related to mysql (if we don't know exact package name)
+cat /etc/*release --> to know the distribution of your server
+
+cat /proc/cpuinfo --> gives cpu information of your system
+cat /proc/meminfo --> gives memory inforation of your system
+cd /etc/
+ls -l *release
+lrwxrwxrwx. 1 root root 21 Sep 27  2023 os-release -> ../usr/lib/os-release
+-rw-r--r--. 1 root root 44 Sep 27  2023 redhat-release
+lrwxrwxrwx. 1 root root 14 Sep 27  2023 system-release -> redhat-release
+cat /etc/os-release --> cat /etc/*release (both can be used to know the distribution of your server)
+yum update --> if there is any update version in packages it will show packages which has updated versions.
+yum update package-name --> it will update the package to latest version
+
+
+EPEL, which stands for Extra Packages for Enterprise Linux, is a repository of additional packages for Enterprise Linux distributions such as Red Hat Enterprise Linux (RHEL), CentOS, and Oracle Linux. Managed by the Fedora Project, EPEL provides a wide range of packages that are not included in the default repositories of these distributions.
+
+EPEL (Extra Packages for Enterprise Linux) repository offers a variety of popular packages including development tools like htop and git, as well as server utilities such as nginx and postgresql. It provides additional software that complements the core RHEL/CentOS distributions, enhancing functionality and performance.
+
+In AWS Linux there is yum repos apart from yum repos AWS people created their own repos it's name is amazon extras. so our server will connect to this extras repos also. [here siva is aws linux 2 image for his instance]
+
+in AWS Linux Instance
+yum install nginx -y
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+amzn2-core
+No package nginx available.
+Error: Nothing to do
+
+nginx is available in Amazon Linux Extra topic "nginx1"
+
+To use, run
+# sudo amazon-linux-extras install nginx1
+
+Learn more at
+https://aws.amazon.com/amazon-linux-2/faqs/#Amazon_Linux_Extras
+
+instead of yum we amazon-linux-extras that's the difference
+amazon-linux-extras intally nginx1 -y (with super-user)
+
+yum update Vs yum upgrade
+--------------------------
+'yum update' upgrades existing packages to the latest versions without removing or installing new packages, while 'yum upgrade' not only updates packages but also handles obsoleted packages and may install or remove packages as needed.
+
+Which to use:
+- Use 'yum update' for a straightforward update of existing packages, avoiding potential changes in package dependencies or removals.
+- Use 'yum upgrade' when you want a more comprehensive update that also manages package obsoletions and dependencies, which may involve installing or 
+  removing packages.
+
+OS Updates is done by administration team. when updating OS we have to make our applications down.
 
 service management
 ---------------------
-0-65,535 ports = 65,536
+0-65,535 ports = 65,536 (These many ports for a computer)
 
-SSH 22
+SSH 22 (SSH will run in port 22)
 
 ssh -i <private-key> user@ip
 
-IP address, server will check is there any service running on port 22. then it will forward request to ssh
+request will go to this IP address, server will check is there any service running on port 22. then it will forward request to ssh
 
 ssh servie will check credentials, if success login
 
-Delhi --> Mumbai
+ssh is a service which running in port no 22. we can access only when the service is running.
 
-if flat no, letter will stuck at security
+For example:
 
+Delhi --> Mumbai (sent a post from delh to mumbai)
+
+if flat number not provided, letter will stuck at security 
+
+in the same way if port number is there then only it will reach to the service.
+
+diagram:
+request --> ip-address --> port no --> service
+inside server there is a ssh service running on port no 22
+
+service means it is running for infinite time. if it stops means then it cannot serve the request.
+
+how to manage this service?
+amazon-linux-extras install nginx1 -y how to run this installed nginx package.
+
+systemctl start nginx --> it means nginx is running
+systemctl status nginx --> to check whether it is running or not.
+this nginx is a http server. http port no 80. https port no 443.
+http://3.89.28.201:80/ 
+request goint --> to this Ip-address --> there is a service running on port no 80 --> service name is nginx.
+in broswer i gave ip-address:port-number 3.89.28.201:80
+in browser i gave facebook.com it is https it's port number is 443 by default request is going to port 443.
+
+systemctl stop nginx --> To stop service. if stop then you cannot connect.
+request goes to ip-address --> but the service is not running on that port.
+
+if you installed any package it will create a folder in /etc like nginx /etc/nginx/
+to change nginx port no
+cd /etc/nginx/
+ls -l
+vim nginx.conf
+
+ server {
+        listen       80;
+        listen       [::]:80;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        error_page 404 /404.html;
+        location = /404.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+    }
+
+if someone start this service it listens on port no 80.
+
+now, i want to list it on port no 8080.
+ server {
+        listen       8080;
+        listen       [::]:8080;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        error_page 404 /404.html;
+        location = /404.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+    }
+
+after changes
 systemctl start nginx
-systemctl status nginx
-systemctl stop nginx
-systemctl restart nginx
-systemctl enable nginx
+http://3.89.28.201:8080/ --> port no provide as 8080 then it will work
+
+systemctl restart nginx --> to restart service
+systemctl enable nginx --> when we shutdown and start our laptop automatically few software will run those are enabled softwares.
 
 enable --> if a service is enabled, even after restarting the server that service automatically start...
 
-process management, network management, linux folder structure
+systemctl enable nginx
+Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /usr/lib/systemd/system/nginx.service.
+
+systemctl disable nginx --> if you don't want the service to run automatically when server restarts.
+Removed "/etc/systemd/system/multi-user.target.wants/nginx.service".
+
+process management, network management, linux folder structure (in next session)
+
+Jenkins Insallation to see how yum.repos.d work
+-------------------------------------------------
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat/jenkins.repo   --> created jenkis.repo in yum.repos.d
+sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io-2023.key
+sudo yum upgrade
+# Add required dependencies for the jenkins package
+sudo yum install fontconfig java-17-openjdk
+sudo yum install jenkins
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+
 
 DNS
 facebook.com --> 11.45.67.89
 
 https://facebook.com:567
-47:10
+
