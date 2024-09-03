@@ -611,3 +611,8 @@ movie we will download
 vlc media software we will download and install
 install = download + install
 
+for 5 years experience certificates
+aws architect associate
+cka
+if possible terraform.
+
