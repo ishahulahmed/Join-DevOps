@@ -171,9 +171,16 @@ In this process increasing the speed and accuracy is devops main responsibility.
 
 Autoscaling --> lack of autoscaling caused aha site down due prabhas interview. 
 
+Testing is till now 100% is not automated. still manunal testing is needed. only 60% of testing is automated. 
+
+Unit testing --> Developer
+Functional Testing --> Tester
+
 stage('Unit test'){
 	testing a single function
 }
 stage('Functional testing'){
-	testing multiple functions is called functional testing
+	testing multiple functions is called functional testing [50 Automated test cases we will test here + remaining they will test manually & approval]
 }
+
+Results of every stage will come in JSON Format. 
