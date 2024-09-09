@@ -141,6 +141,7 @@ existing folder
 ----------------
 create repo in central
 git init --> .git directory will be created
+git branch -M main (as it will create master branch we want to name as main)
 git remote add orign <git-url>
 git add git commit git push
 
@@ -234,6 +235,18 @@ Host  github.com-j
      User git
      PreferredAuthenticatios publickey
      IdentityFile ~/.ssh/techworldwithsiva
+
+If in a instance in aws you want to add some file in your repostiory of github.
+in ~/.ssh folder set config file (with host and hostname etc as above) and place your private key
+set author identity if not set
+git clone git@github.com:ishahulahmed/practice-git.git (this is ssh url it will automatically go to .ssh folder and check config file)
+if you want to add files just normally add files and do changes 
+use command git add .; git commit -m "some-message"; git push origin main --> this will work since you cloned using ssh automatically it will push with your private key.
+
+54.172.31.172 | 172.31.24.99 | t2.micro | git@github.com:ishahulahmed/practice-git.git  --> this is ssh url
+[ ec2-user@ip-172-31-24-99 ~/practice-git ]$
+
+you can easily see the repository is showing the SSH url.
 
 Tommorow we will learn
 ------------------------	
