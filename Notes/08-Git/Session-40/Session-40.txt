@@ -7,7 +7,50 @@ d) Merge vs Rebase
 e) Merge conflicts
 
 when you first install git in your local machine. later created few files and want to commit those files to git using
-git add .
+git add . (it will add to staging area)
+git commit -m "some-message" (here you will get Author identity unknow error)
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'shahu@Shahuls-Laptop.(none)')
+
+You, need to set your user.email and user.name for commiting your changes. Here Your Setting global identiy i.e default identity. you can also set a new author for every repository you created.
+
+Set Author for a Specific Repository (Locally)
+-----------------------------------------------
+If you want to set the author name and email for just one specific repository:
+
+1) Navigate to the repository's directory using your terminal or command prompt.
+
+2) Run the following commands:
+   git config user.name "Your Name"
+   git config user.email "your.email@example.com"
+   This will only affect the repository you're currently in and won't change the settings for any other repositories.
+
+3) To check the current author settings for the repository, you can use:
+   git config user.name
+   git config user.email
+
+4) To check global settings:
+   git config --global user.name
+   git config --global user.email
+
+5) These settings determine the author information for commits you make.
+
+This is just commit author. When you push your changes to remote github. either you can send it through SSH by saving credentials in .ssh folder (using your private key) or window credential manager will save your github credentials it will push changes to your github account automatically when you type. git push origin main. (you can check in credentials of your github account in windows credential manager).
+
+to see global configuration set 
+cat ~/.gitconfig (in user home directory .gitconfig will have have global author configuration details)
+
 
 till we were in the main branch adding to the staging area, making local commits and then pushing to the remote repository.
 
