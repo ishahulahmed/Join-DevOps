@@ -6,6 +6,9 @@ c) Rebase
 d) Merge vs Rebase
 e) Merge conflicts
 
+when you first install git in your local machine. later created few files and want to commit those files to git using
+git add .
+
 till we were in the main branch adding to the staging area, making local commits and then pushing to the remote repository.
 
 imp file --> duplicate the file
