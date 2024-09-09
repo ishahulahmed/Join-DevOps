@@ -46,7 +46,7 @@ If you want to set the author name and email for just one specific repository:
 
 5) These settings determine the author information for commits you make.
 
-This is just commit author. When you push your changes to remote github. either you can send it through SSH by saving credentials in .ssh folder (using your private key) or window credential manager will save your github credentials it will push changes to your github account automatically when you type. git push origin main. (you can check in credentials of your github account in windows credential manager).
+This is just commit author. When you push your changes to remote github. either you can send it through SSH by saving credentials in .ssh folder (using your private key) or window credential manager (it will prompt for credentials for first time and store them in it) will save your github credentials it will push changes to your github account automatically when you type. git push origin main. (you can check in credentials of your github account in windows credential manager).
 
 to see global configuration set 
 cat ~/.gitconfig (in user home directory .gitconfig will have have global author configuration details)
