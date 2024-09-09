@@ -52,7 +52,7 @@ to see global configuration set
 cat ~/.gitconfig (in user home directory .gitconfig will have have global author configuration details)
 
 
-till we were in the main branch adding to the staging area, making local commits and then pushing to the remote repository.
+till now we were in the main branch adding to the staging area, making local commits and then pushing to the remote repository.
 
 imp file --> duplicate the file
 do the changes
@@ -76,29 +76,32 @@ Colloboration --> This is about Collabration. So, if in a project more than one 
 
 Branching
 -----------
-main --> points to Production, direct changes are not at allowed. 
+main --> points to Production, direct changes are not at all allowed. 
 through some review process (changes in main brnach only through review process)
 
 main --> feature branch
 
 do changes in feature branch --> get reviews --> run some tests --> scan the code
 
-feature --> main (merge feature branch into main branch)
+feature --> main (merge feature branch into main branch if everything is proper)
 
 everyone should create one branch for any change... (in a project everyone should create one branch)
 
+in projects you have to give proper message for commits
+
+
 git log --oneline (you will get log in one line)
-83f3b7f (HEAD -> main, origin/main) started first with plain dosa
+587b8b9 (HEAD -> main, origin/main) started first with plain dosa
 
 git log (will give full information)
-commit 83f3b7f48683c78c3ee2a504c225c9976051280e (HEAD -> main, origin/main)
+commit 587b8b994a78d9bdc7ca3220c13eed11c097a1c7 (HEAD -> main, origin/main)
 Author: ishahulahmed <shahulahmed1717@gmail.com>
-Date:   Sat Aug 31 12:29:59 2024 +0530
+Date:   Mon Sep 9 16:55:49 2024 +0530
 
     started first with plain dosa
 
 
-83f3b7f48683c78c3ee2a504c225c9976051280e --> SHA Code --> this is a algorithm --> 40 chars 
+587b8b994a78d9bdc7ca3220c13eed11c097a1c7 --> SHA Code --> this is a algorithm --> 40 chars 
 (no matter how much big file we will give SHA algorithm will create a 40 charchters code)
 
 git - the stupid content tracker (content tracker means that's a key value pair)
@@ -111,13 +114,14 @@ key --> value
 echo "Hello World" | git hash-object --stdin --> prints sha code on the screen for this content  (here echo "hello World" is input to second command)
 (here for Hello World content you will same id anywhere if content changes id will change)
 (git using this SHA algorithm verifies whether content is changed or not according to content id will be generated)
+i.e based on the content algorithm will be created if same content same algorithm if content changes new algorithm.
 
 git cat-file <commit id> -p --> print the info about sha code
 
-git cat-file 83f3b7f48683c78c3ee2a504c225c9976051280e -p
-tree 50720f518454641b6b0496802cc5109cb9e3fcaa
-author ishahulahmed <shahulahmed1717@gmail.com> 1725087599 +0530
-committer ishahulahmed <shahulahmed1717@gmail.com> 1725087599 +0530
+git cat-file 587b8b994a78d9bdc7ca3220c13eed11c097a1c7 -p
+tree 351063b583ef21f853aab68a3b71e0c3a386ca3c
+author ishahulahmed <shahulahmed1717@gmail.com> 1725881149 +0530
+committer ishahulahmed <shahulahmed1717@gmail.com> 1725881149 +0530
 
 started first with plain dosa
 
@@ -134,10 +138,10 @@ git checkout -b --> create new branch and change the workspace into new branch
 git checkout -b karam-dosa
 Switched to a new branch 'karam-dosa'
 
-new branch means till now which is already existing we are duplicating it and putting it into new branch
+new branch means till now the code which is already existing we are duplicating it and putting it into new branch.
 
 git log --oneline
-83f3b7f (HEAD -> karam-dosa, origin/main, main) started first with plain dosa
+587b8b9 (HEAD -> karam-dosa, origin/main, main) started first with plain dosa
 (SHA Code will be same since no changes were made in the code only new branch created and it's first commit-id will be the last commit-id of main branch  
  because that is where from we are starting)
 
@@ -145,11 +149,25 @@ git add .; git commit -m "added karam to dosa"; git push origin karam-dosa (maki
 git add .; git commit -m "added oil to karam dosa"; git push origin karam-dosa
 
 git log --oneline
-6e64599 (HEAD -> karam-dosa, origin/karam-dosa) added oil to karam dosa
-3332287 added karam to dosa
-83f3b7f (origin/main, main) started first with plain dosa
+2052f25 (HEAD -> karam-dosa, origin/karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 (origin/main, main) started first with plain dosa
 
 now, we want to merge this changes in main branch.
+since we have added protection to main branch. we need to pull the changes to our main branch using pull request.
+
+Pull requests --> New pull request --> Compare Changes base:main <-- compare: karam-dosa i.e karam-dosa branch to main branch changes we are pulling --> Create pull request --> Again if you want add description and press Create pull request.
+
+it will say Atleast 1 approving review is required by reviewers with write access.
+
+this changes any of our team member will have to review to review first go to settings of the repository --> Collaborators --> Add people (to add as collabrator he used his other account) (give the person write access inorder to give review an invite will be sent to him he has to accept)
+
+if he accepts the invite --> he will get access to repository --> then he needs to go to pull requests column --> review changes and accept.
+he can even give comments i.e he can give comment or review even on a particular line --> recommendations --> reject changes.
+
+if you are the owner of the repo and you only created the branch directly on the repository itself it will show Compare & pull request.
+(Above process is for other than owner i.e different account holder and even owner can also do the process)
+
 After merging pull request in github you need to changes in local repository (that is you need to pull those changes in local repository also)
 git checkout main
 git pull (git pull origin main)
@@ -336,7 +354,7 @@ now you can raise pull request since conflicts are not showing
 then reiviewers will reiview your code and finally merged to main branch
 
 
-23:52
+30:35
 
 
 
