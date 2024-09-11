@@ -11,7 +11,7 @@ git add . (it will add to staging area)
 git commit -m "some-message" (here you will get Author identity unknow error)
 Author identity unknown
 
-*** Please tell me who you are.
+* Please tell me who you are.
 
 Run
 
@@ -165,12 +165,32 @@ this changes any of our team member will have to review to review first go to se
 if he accepts the invite --> he will get access to repository --> then he needs to go to pull requests column --> review changes and accept.
 he can even give comments i.e he can give comment or review even on a particular line --> recommendations --> reject changes.
 
+Other Person --> Pull requests --> Add your review --> Review changes --> Approve (option selection) --> submit review --> Merge Pull request --> confirm merge.
+
+After merging you can delete the branch. (in projects people generally are afraid to delete branches as they do not have a sufficient knowledge. delete only if you have full fledeged knowledge)
+
 if you are the owner of the repo and you only created the branch directly on the repository itself it will show Compare & pull request.
 (Above process is for other than owner i.e different account holder and even owner can also do the process)
 
-After merging pull request in github you need to changes in local repository (that is you need to pull those changes in local repository also)
+After merging pull request in github you need to reflect those changes in your local repository (that is you need to pull those changes in local repository also)
 git checkout main
-git pull (git pull origin main)
+git pull 
+
+git log --oneline (in main branch after pulling those changes locally)
+14f5301 (HEAD -> main, origin/main) Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+git cat-file 14f5301  -p
+tree 0dc43a3834281e27368d2a9f88bf4e7550de97a9
+parent 587b8b994a78d9bdc7ca3220c13eed11c097a1c7
+parent 2052f25b4bf85b67cb6bc82049c2322e4c8671b7
+author Shahul Ahmed <134133208+ishahulahmed@users.noreply.github.com> 1725951929 +0530
+committer GitHub <noreply@github.com> 1725951929 +0530
+
+You can see this commit has two parents. one parent is main branch last commit-id and other is feature (karam-dosa) branch last commit-id.
+
 
 whether to know whether a commit is merge commit or normal commit for merge commit there will be two parents for normal commits only one parent.
 the previous commit is the parent to the present commit in normal commit
@@ -254,8 +274,8 @@ Two ways to create repository
    git push -u origin main
       	
    
-Merge
--------
+Merge 2 types
+--------------
 Merge
 rebase
 
@@ -267,12 +287,48 @@ raise PR
 get the approval
 then merge it
 
-merge gives us a new merge which has 2 parents, we can clearly see the history
+merge gives us a new merge (commit-id) which has 2 parents, we can clearly see the history
+
+Rebase-Concept
+---------------
+git checkout -b neyyi-karam-dosa (create and move into that branch)
+Switched to a new branch 'neyyi-karam-dosa'
+git add .; git commit -m "added neyyi"; git push origin neyyi-karam-dosa
+
+git log --oneline
+214d798 (HEAD -> neyyi-karam-dosa, origin/neyyi-karam-dosa) added neyyi
+14f5301 (origin/main, main) Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+git add .; git commit -m "added extra karam"; git push origin neyyi-karam-dosa
+git log --oneline
+a215224 (HEAD -> neyyi-karam-dosa, origin/neyyi-karam-dosa) added extra karam
+214d798 added neyyi
+14f5301 (origin/main, main) Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+Same Process Again
+git-dosa --> Pull requests --> New pull request --> base: main <- compare: neyyi-karam-dosa --> Create pull request --> Again press Create pull request (after providing description)
+
+At least 1 person needs to give reviews
+reviewer will see changes --> comments or reviews on specific lines --> finally approve or reject.
+siva started a review on a line of code --> finshed it by Comment (Submit general feedback without explicit approval) type review.
+
+No, one will accept the code that easily. you need to scrutinse the code.
+reviewer --> Add your review --> Review changes --> Approve (Submit feedback and approve merging these changes)
+
+after the review is done by reviewer you can merge the pull request in the owners repository. here reviewers are there just to review and give approve only in the main repository where repository is created in that account we can create a merge commit (or) squash and merge (or) rebase and merge that pull request.
+
+siva opted for Rebase and Merge --> confirm rebase and merge
 
 Rebase
 ---------
-rebase --> change the base
-no extra commit
+rebase --> change the base (All commits are rebased, and the same number of commits are added to the main branch)
+no extra commit (merge will get extra commit)
 commit id are changed (different from branch commit id's)
 no history is preserved, it is rewritten as if it is done in main branch
 looks clean, linear history
@@ -295,15 +351,272 @@ single branch --> single person --> prefer rebase
 if you dont want history --> prefer rebase
 if you want clean structure --> prefer rebase
 
-git branch -d egg-dosa (To delete a branch)
+after rebase
+git checkout main
+git pull origin main (pulling the changes locally after rebase)
+
+git log --oneline
+3f45f5d (HEAD -> main, origin/main) added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+git branch -d egg-dosa (To delete a branch locally)
 
 conflicts
 ----------------
-if git findsout 2 different content in the same line, it cant take decission. people who wrote the code should sit together and resolve conflict
+if git findsout 2 different content in the same line, it can't take decision. people who wrote the code should sit together and resolve conflict.
 
-if main branch is moved forward 
-another branch is trying to merge the changes, then conflict will come 
-(By considering the old main branch not new main branch which has moved)
+if main branch is moved forward
+another branch is trying to merge the changes, then conflict will come.
+
+if main branch is moved forward (changes have been made to main branch). another branch is trying to merge the changes into main branch without considering the changes which already took place in the main branch, then conflict will come. this usually happens when the developer is not aware of changes in main branch and trying to push is changes.
+
+confilcting occuring because same line with two different content. (because this developer trying to merge using old main branch but main branch has already moved forward)
+
+
+Two Developers are working at the same time on the main branch
+
+Developer-1
+------------
+git clone https://github.com/ishahulahmed/git-dosa.git
+
+git checkout -b egg-dosa
+Switched to a new branch 'egg-dosa'
+
+git add .; git commit -m "added 2 eggs"; git push origin egg-dosa
+
+git log --oneline
+a394edc (HEAD -> egg-dosa, origin/egg-dosa) added 2 eggs
+3f45f5d (origin/main, main) added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+git add .; git commit -m "added oil"; git push origin egg-dosa
+
+git log --oneline
+d5d4d13 (HEAD -> egg-dosa, origin/egg-dosa) added oil
+a394edc added 2 eggs
+3f45f5d (origin/main, main) added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+Now, Developer-1 thought he has done what it needs to be done and raised a pull request. he is bit faster than developer-2.
+Pull requests --> New pull requests --> base: main <- compare: egg-dosa --> Create pull request --> Again Create pull request (after description)
+
+reviewrs --> Add your review --> Review changes --> Approve (Submit feedback and approve merging these changes).
+go to main repositry --> since approval got from reviewers --> Rebase and merge --> Confirm rebase and merge.
+
+now, successfully merged in main branch.
+
+git checkout main
+git pull
+
+git log --oneline
+4322c8a (HEAD -> main, origin/main) added oil
+d2c90bb added 2 eggs
+3f45f5d added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+here, rebase so new commit-id's we will get.
+
+Developer-2
+------------
+git clone https://github.com/ishahulahmed/git-dosa.git
+
+git checkout -b karam-egg-dosa
+Switched to a new branch 'karam-egg-dosa'
+
+git add .; git commit -m "removed extra karam"; git push origin karam-egg-dosa
+
+git log --oneline
+5f51811 (HEAD -> karam-egg-dosa, origin/karam-egg-dosa) removed extra karam
+3f45f5d (origin/main, origin/HEAD, main) added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+git add .; git commit -m "added 3 eggs"; git push origin karam-egg-dosa
+
+git log --oneline
+7f03963 (HEAD -> karam-egg-dosa, origin/karam-egg-dosa) added 3 eggs
+5f51811 removed extra karam
+3f45f5d (origin/main, origin/HEAD, main) added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+Developer-2 was slower than Developer-1 now he thought he has also completed and want to create pull request. he don't already developer-1 made changes it is merged into main branch.
+
+now developer-2 will raise pull request since his karam-egg-dosa is also ready for market
+Pull requests --> New Pull requests --> base: main <- compare: karam-egg-dosa --> Can't automatically merge --> but procced to Create pull request
+Create pull request --> Again Create pull request (description)
+You will get below Review required
+This branch has conflicts that must be resolved.
+Conflicting files
+menu.txt
+
+here main branched already moved from 3f45f5d to 4322c8a (this is rebase commit-id). so conflict comes. so we need to resolve.
+in market already egg-dosa is running which this guy don't know. but now he wants to run karam-egg-dosa in market. so there is confict now.  
+
+developer-2 must now first pull the changes in main
+git checkout main
+git pull origin main 
+
+now, he must compare the changes between main and his changes by merging
+
+git checkout karam-egg-dosa
+git rebase main (comparing the main branch changes and his branch changes)
+Auto-merging menu.txt
+CONFLICT (content): Merge conflict in menu.txt
+error: could not apply 5f51811... removed extra karam
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+Could not apply 5f51811... removed extra karam
+
+after rebase you can clearly. see, there is a conflict. now both the developers will sit and decide whose line to accept. in reality this guy only if he feels the other developer code is good he will accept that or if his code is good he will accept his code.
+
+rebase will be done for one by one commit 
+vim menu.txt [make your changes whether extra karam needed or not]
+
+git rebase --continue [this is not needed here i feel he did by mistake]
+menu.txt: needs merge
+You must edit all merge conflicts and then
+mark them as resolved using git add
+
+after doing the changes for first commit then commit those changes locally
+git add .; git commit -m "remove neyyi" [locally not pushed to remote]
+
+now again for other commit
+git rebase --continue [now it will go for second commit of the developer-1 it is comparing dev-1 commits one by one with your file]
+Auto-merging menu.txt
+CONFLICT (content): Merge conflict in menu.txt
+error: could not apply 7f03963... added 3 eggs
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+Could not apply 7f03963... added 3 eggs
+
+vim menu.txt [make your changes whether 3 eggs not]
+commit those changes locally
+git add .; git commit -m "instead of 3 eggs 2 eggs and karam"
+interactive rebase in progress; onto 4322c8a
+Last commands done (2 commands done):
+   pick 5f51811 removed extra karam
+   pick 7f03963 added 3 eggs
+No commands remaining.
+You are currently rebasing branch 'karam-egg-dosa' on '4322c8a'.
+  (all conflicts fixed: run "git rebase --continue")
+
+nothing to commit, working tree clean
+
+you, got this message because all commits have rebased. now again run git rebase --continue for successfully completing the process.
+
+run again
+git rebase --continue
+Successfully rebased and updated refs/heads/karam-egg-dosa.
+
+
+now, if you see commit-id's
+git log --oneline
+298a621 (HEAD -> karam-egg-dosa) remove neyyi
+4322c8a (origin/main, origin/HEAD, main) added oil
+d2c90bb added 2 eggs
+3f45f5d added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+
+
+you, can see commit-id's of karam-egg-dosa branch have been change from the previous id's.
+
+git push origin karam-egg-dosa [pushing changes to remote but rejected due we wrote the entire history so do force change]
+Warning: Permanently added 'github.com' (ECDSA) to the list of known hosts.
+To github.com:ishahulahmed/git-dosa.git
+ ! [rejected]        karam-egg-dosa -> karam-egg-dosa (non-fast-forward)
+error: failed to push some refs to 'github.com:ishahulahmed/git-dosa.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. If you want to integrate the remote changes,
+hint: use 'git pull' before pushing again.
+
+git push origin karam-egg-dosa -f [this will work]
+
+Since, you have already created pull request. But, you were not successful in creating pull request because it was showing merge conflicts error.
+now, no need to create new pull request. go to the same pull request. since merge conflicts have been resolved. now you can successfully place your pull request.
+
+
+reviewrs --> Add your review --> Review changes --> Approve (Submit feedback and approve merging these changes).
+go to main repositry --> since approval got from reviewers --> Merge pull request --> Confirm merge.
+
+git checkout main
+git pull
+1f46400 (HEAD -> main, origin/main, origin/HEAD) Merge pull request #4 from ishahulahmed/karam-egg-dosa
+298a621 (origin/karam-egg-dosa, karam-egg-dosa) remove neyyi
+4322c8a added oil
+d2c90bb added 2 eggs
+3f45f5d added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa) added oil to karam dosa
+
+
+git merge main Vs git rebase main
+----------------------------------
+Both 'git merge main' and 'git rebase main' are used to integrate changes from one branch into another, but they do so in different ways.
+
+git merge main
+
+a) Concept: Merges the main branch into your current branch (let’s say you're on a feature branch).
+b) How It Works: It creates a new commit (a merge commit) that combines the changes from main with the changes in your current branch.
+c) History: Preserves the history of both branches, showing the branching and merging points.
+d) Use Case: Useful when you want to maintain the complete history of how the project evolved, including the branch merges.
+e) git checkout feature-branch
+   git merge main
+   
+
+git rebase main
+---------------
+a) Concept: Re-applies your current branch’s changes on top of the main branch, effectively rewriting the commit history.
+b) How It Works: It takes the commits from your current branch and re-applies them one by one on top of the main branch.
+c) History: Creates a linear history, which can make it easier to follow. It does not preserve the branch structure as merge does.
+d) Use Case: Useful for cleaning up the commit history before merging into a shared branch or for keeping your branch up-to-date with the main branch in a linear fashion.
+e) git checkout feature-branch
+   git rebase main
+  
+
+Key Differences
+---------------
+
+a) History: 'merge' retains the history of all branches and their commits, while 'rebase' rewrites history to create a linear progression of commits.
+b) Commit History: merge creates a merge commit that reflects the integration of branches, whereas rebase replays your commits on top of another branch, effectively making it appear as if you started your work from the tip of the main branch.
+c) Conflict Resolution: Both can require resolving conflicts if they arise, but with rebase, you may have to resolve conflicts multiple times, once for each commit being replayed.
+
+Which to Use
+-------------
+- Use merge if you want to preserve the branch history and are okay with having merge commits.
+- Use rebase if you want a cleaner, linear history and are okay with rewriting your branch’s commit history.
+
+It’s often a matter of preference and workflow. For collaborative work, merge is safer to avoid rewriting shared history, while rebase is more commonly used for individual or feature branch management before merging into the main branch.
 
 ChatGpt
 -------
@@ -325,6 +638,7 @@ However, there are some considerations to keep in mind:
 a) File Deletions: If files were deleted in the new main branch that still exist in your branch (and have been modified), Git will mark these as conflicts because it needs to reconcile the deletion with your changes.
 
 b) Binary Files: If the new files in the main branch are binary files or files that Git cannot merge automatically (like images), you may encounter conflicts.
+
 
 My Example
 -----------
@@ -354,7 +668,7 @@ now you can raise pull request since conflicts are not showing
 then reiviewers will reiview your code and finally merged to main branch
 
 
-30:35
+
 
 
 
