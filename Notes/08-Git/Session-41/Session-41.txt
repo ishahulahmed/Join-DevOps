@@ -1,22 +1,34 @@
+if you don't have any idea blindly go for merge.
+
+even DevOps engineers will also get conflicts. Because, we are also developing scripts and pushing it to github. devops engineers will also creates branches and then if got approval then it is merged to main branch.
+
+Git Branching Strategy is so much important. here we can differentiate easily one person is genuine or not.
+
 Branching Strategy
 ---------------------
-developers writing the code in non main/master branches. How it gets upto main/master branch. How the deployment happens in diff environments like DEV, SIT, UAT, PERF, PRE-PROD, PROD, SEC
+developers writing the code in non main/master branches. How it gets upto main/master branch. How the deployment happens in diff environments like DEV, SIT (Systems Integration Testing or QA Env), UAT, PERF (Performance), PRE-PROD, PROD, SEC (Security)
+
+Environment depends on the projects. Usually, banking projects have lot of environments. small projects have less environments.
 
 Waterfall Model
 ----------------------
+https://nvie.com/posts/a-successful-git-branching-model/ 
+Written By Vincent Driessen (on Tuesday, January 05, 2010) at that time web applications were not popular he wrote the strategy about desktop applications.
 
-Desktop applications --> Have to support multiple versions
+Desktop applications --> Have to support multiple versions (disadvantage of Desktop application)
 	windows 11, 10, 11.3
-	Ms Office 2021, 2019, 2016, 2013
-		MS Office 2013 --> huge bug
+	Ms Office 2021, 2019, 2016, 2013 (Desktop Application has to support all these version because not everyone move to latest version)
+		MS Office 2013 --> huge bug (now office 2021 is running but if 2013 got a bug the microsoft team will)
 		get the code released for 2013 latest version
 		resolve the bug
 		release the patch
-	MS Office 2024
+	MS Office 2024 (now they are launching office 2024)
 
-atleast 3 months to release the change
+one team will work for 2024. one for 2021 etc this was a complex procedure. i.e different teams working on different versions.
+
+atleast 3 months to release the change 
 		
-Web applications --> there is no point of versions
+Web applications --> there is no point of versions (for web applications no versions)
 
 hotfix
 ----------------
@@ -128,3 +140,5 @@ RCA --> Root cause analysis
 
 1. you are working on latest modern things from the beginning
 2. you worked on legacy things, you were part of migrating from legacy to modern
+
+15:43
