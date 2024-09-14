@@ -220,4 +220,17 @@ kanuganti mahendra --> 9.5 years --> 4 companies --> never worked on git and dev
 data center server disk full --> for replacing that disk --> assiging field engineer --> following him up --> giving him access --> allowing him into datacenter --> if he swapping disk over there --> we are monitoring him in console here.
 after legacy enironment --> shiffted to VM Ware --> in VM Ware directly we scan and extend our disk --> still we are working on virtual data cloud.
 
-1:13:53
+
+companies will delete the branches because after few years there will be 50 to 60 branches even to clone the code it will be difficult. so, they will delete the branches.
+
+Amani -- she will prepare all the configuration necessary to run a software and push it -- Application Package Manger
+------------------------------------------------------------------------------------------------------------------------
+in her project there will change request meeting in that someone will represent the change. whom soever represent the change they have to tell what are the major changes we are going to do and what are the roll out benfits of this change. change freeze period will be there in that also we will discuss is it super important to roll out in this period. if changes got approved. in changes request schedule time we will perfomr change requests and we will send out the mails.
+
+in whatsapp app or desktop app only when we will update the bugs will be fixed no deployment window like web apps.
+
+sai saranya - developer
+-------------------------
+they will follow cr process with jira tickets. she said exactly like shiva they will follow.
+
+in production that is infra changes or development changes they will follow CR process.
