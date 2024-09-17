@@ -1,0 +1,61 @@
+git reset
+git revert
+
+git reset vs git revert --> undo the changes done
+
+mostly these commands we should not use. But, there are situations when we you should use them. we will discuss about them today.
+
+you, should always pull the changes before you push.
+cd /d/devops/repos/git-dosa
+git checkout main
+git pull origin main
+
+Best Strategy or Best Practise
+-------------------------------
+before you raise PR, check main branch moved forward or not?
+git checkout main
+git pull origin main
+
+pull before push
+
+Concept
+--------
+git checkout -b reset-revert
+Switched to a new branch 'reset-revert'
+
+our, busniess grown we thought to have new item 99 dosa. so we made samples to try it in our own shop
+git add .; git commit -m "paneer curry" [not pushed to remote did locally only at shop still not launched]
+git add .; git commit -m "added cheese" [doing locally only for our employees and owners to taste]
+git add .; git commit -m "added butter" [doing locally]
+
+git log --oneline
+a304aa4 (HEAD -> reset-revert) added butter
+583273b added cheese
+e4ca200 paneer curry
+1f46400 (origin/main, main) Merge pull request #4 from ishahulahmed/karam-egg-dosa
+298a621 (origin/karam-egg-dosa) remove neyyi
+4322c8a added oil
+d2c90bb added 2 eggs
+3f45f5d added extra karam
+8572644 added neyyi
+14f5301 Merge pull request #1 from ishahulahmed/karam-dosa
+2052f25 (origin/karam-dosa, karam-dosa) added oil to karam dosa
+467de17 added karam to dosa
+587b8b9 started first with plain dosa
+
+Suddenly, owner said that this all not good remove
+
+Reset
+-------
+git reset (3 options)
+1. soft
+2. mixed
+3. hard
+
+index/staging/ temp area -> git add (we will add to staging area by git add command)
+
+soft --> it will remove the commits, but keep the changes in staging area
+
+git add .; git commmit -m ""
+
+git reset --soft HEAD~1 

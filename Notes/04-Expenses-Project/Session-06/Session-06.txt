@@ -1,31 +1,42 @@
-Process Management
+Write Points What you Learned in Course
+----------------------------------------
+Experience with Linux Server admin activities like user, service, package, network and process management.
+Experience in using Linux editors like vim.
+Experience in using public and private, configuring them to the servers..
+
+Process Management 
 ----------------------
 process --> a sequence of steps to follow to complete a task...
 
-ticketing system. every order will get one order/ticket id. (it is a process to serve the customer)
+Outside, Whatever the business may be IT or Non-IT ticketing system is there.
 
-in linux/windows everything is process.
+Why ticketing system? that is a process to serve the customers. 
+
+ticketing system means every order will get one order/ticket id. customers can easily see the orderid and get the order. end of the days business will also will have an idea how many orders placed and served on different dates and their values etc.
+
+in linux/windows (any operations system) everything is process.
 
 Linux creates process id for everything...
 
-PID --> process instance id (Operating Systems Track Tasks using PID. How many tasks completed and pending)
+PID --> process instance id (Operating Systems tracks Tasks using PID. How many tasks completed and pending)
 
 If a task is big, do you think one process is enough?
 
 We create subtasks...
 
-Acc Manager Team Manager Lead Senior Junior Trainee
+Acc Manager, Team Manager, Lead, Senior, Junior, Trainee  --> In a Team also we have
 
 Trainee reports to Junior, Junior reports to Senior
 
-Trainee is child, his parent is Junior
+here Trainee is child, his parent is Junior
 
-PID, PPID
+PID, PPID (PID reports to PPID) (Parent Process Instance Id)
 
-ps
+ps (used to check the status of active processes on a system and display technical information about them)
 
-3327 pts/0    00:00:00 bash
-3351 pts/0    00:00:00 ps
+ PID TTY          TIME CMD
+1338 pts/0    00:00:00 bash
+1636 pts/0    00:00:00 ps
 
 ps -ef --> all process in linux
 
