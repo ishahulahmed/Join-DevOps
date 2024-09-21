@@ -1,22 +1,44 @@
 git reset
 git revert
 
-git reset vs git revert --> undo the changes done
-
 mostly these commands we should not use. But, there are situations when we you should use them. we will discuss about them today.
+
+git reset vs git revert --> undo the changes done
 
 you, should always pull the changes before you push.
 cd /d/devops/repos/git-dosa
 git checkout main
 git pull origin main
 
-Best Strategy or Best Practise
--------------------------------
+Best Practise
+---------------
 before you raise PR, check main branch moved forward or not?
 git checkout main
 git pull origin main
 
-pull before push
+pull before push --> recommended way (even before pushing your branch pull changes in main)
+
+ChatGPT
+-------
+No, the changes in the main branch will not automatically reflect in your dosa branch after you switch back to it. When you create a branch, it takes a snapshot of the current state of the repository at that point in time.
+
+To incorporate the changes from main into your dosa branch, you'll need to merge or rebase. Here’s how you can do it:
+
+1. Merge:
+   bash
+   git checkout dosa
+   git merge main
+   
+   This will bring the changes from main into your dosa branch, creating a new merge commit.
+
+2. Rebase (if you prefer a linear history):
+   bash
+   git checkout dosa
+   git rebase main
+   
+   This will replay your dosa branch commits on top of the latest commits from main.
+
+Choose the method that best fits your workflow!!
 
 Concept
 --------
@@ -43,7 +65,7 @@ d2c90bb added 2 eggs
 467de17 added karam to dosa
 587b8b9 started first with plain dosa
 
-Suddenly, owner said that this all not good remove
+Suddenly, owner said that this all not good remove. 
 
 Reset
 -------

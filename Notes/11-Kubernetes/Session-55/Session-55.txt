@@ -277,7 +277,7 @@ you cannot give same name to a pod if some other pod is also running with same n
 kubectl delete -f 02-pod.yaml
 kubectl delete -f 03-multi-container.yaml
 
-kubectl exec -it multi-container -c alma --bash
+kubectl exec -it multi-container -c alma -- bash
 (To Connect to the container like docker exec -it)
 
 When you use docker exec -it to connect to a container and run curl localhost inside the container, you are querying the container itself, not the host server. (by defualt port 80)
