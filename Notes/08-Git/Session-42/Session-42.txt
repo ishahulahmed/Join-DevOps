@@ -65,7 +65,9 @@ d2c90bb added 2 eggs
 467de17 added karam to dosa
 587b8b9 started first with plain dosa
 
-Suddenly, owner said that this all not good remove. 
+Suddenly, owner said that this all not good remove. Till know the changes we did how to bring back to original is nothing but reset and revert.
+
+Till now we have made changes locally only not commited to remote
 
 Reset
 -------
@@ -74,10 +76,10 @@ git reset (3 options)
 2. mixed
 3. hard
 
-index/staging/ temp area -> git add (we will add to staging area by git add command)
+index/staging/ temp area -> git add (we will add to staging area by git add command) (everything same index or staging or temp)
 
 soft --> it will remove the commits, but keep the changes in staging area
 
-git add .; git commmit -m ""
+git add .; git commmit -m "" (these are the two operations we performed)
 
 git reset --soft HEAD~1 
