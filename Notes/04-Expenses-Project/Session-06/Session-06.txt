@@ -200,48 +200,237 @@ for this ami's key pair is not needed becuase already configured with username a
 
 make 3 instance of RHEL 9 for our project in AWS and Launch them.
 
-image = we + our surroundings
-AMI = Bare OS + packages you installed
+image = we + our surroundings (in normal photos we take)
+in OS we will install a lot of packages and spend a lot of time to configure that OS. If we take a photo of linux server after installing packages and doing necessary configuration changes is called AMI.
 
+AMI = Bare OS + packages you installed
 use AMI you will get all packages
 
+now a days windows is comming with default packages like antivirus, ms-office etc. what does it mean? windows people are already installing these and converting it into an iso image and giving us that image.
+
+since there is no key. using gitbash
+ssh ec2-user@54.235.225.211
+then it will ask for password DevOps321.
+
+if there are multiple servers then it is difficult to use GitBash. Then we have somehthing called
 putty and super putty
 mobaxterm --> alternative to putty and super putty
 
+Go to https://putty.org/ --> Click Download PuTTY --> 64-bit x86: putty-64bit-0.81-installer.msi 
+after installing putty --> create a session daws-78s --> Connection-Data give ec2-user --> Appearance-Bold-12 Size --> Save Session.
+Load Session --> Give Ip-Address --> You can just enter password and login.
+
+for Putty no new tab option --> So install Super Putty --> Download msi installer
+super putty will ask putty location because super putty will run on top of putty.
+putty.exe Location (Required): C:\Program Files\PuTTY\putty.exe
+
+in some windows super putty will not work. you can use mobaxterm download MobaXterm Home Edition (installer edition)
+
+expense-documentation
+----------------------
+mysql
+-----
 RDBMS --> relational database management system
-Table and column based data
+Table --> Row and column based data 
 
 USER
 ------
-ID	USERNAME	PASSWORD		MobileNumber
+ID	USERNAME	PASSWORD	MobileNumber
 1	joindevops	joindevops321	6281937079
 
 ADDRESS
 -------
 ID	USERID	AddressLine1	AddressLine2	City
-1	1	    	sanath nagar	stree3		HYD
+1	1*	sanath nagar	stree3		HYD
 
-mysql --> 3306
+* --> primary key and foreign key this is sql concepts he has not explained anything.
+Between Tables there is a relation so it is called Relational Database Managment.
 
-username --> root
+Database will have schemas and schemas will have tables. schema is just like a partion. users schema will have all user related tables. transactions schema will have all transactions related tables.
 
+Database --> Server --> Schema --> Tables
+
+Devlopment or DB Architects will deciede which db to use here they have decided to use mysql in our project. devops persons will not take decision about db.
+
+From RHEL 9 we are using dnf [don't know which version perfectly]
+
+connect to db server --> Take sudo access --> run the commands in mysql documentation.
+
+mysql is heavy software sometimes t2.micro will not work at that time you can go for t3.micro.
+
+how to check whether is service is running or not (here mysql)
+systemctl status mysqld
+netstat -lntp [see whether 3306 port is opened or not]
+ps -ef | grep mysqld | grep -v grep
+
+
+mysql --> 3306 [port for mysql]
+
+username --> root [username for mysql default]
+
+suppose, your db adminstrator now you want to whether it is working properly or not
+mysql [type mysql and enter]
+after this you will get mysql prompt [mysql> ]
+show databases; [write this and press enter] [don't confuse here databases is nothing but schema here]
+exit [to exit]
 
 Backend
 -------------------
+Backend will run CRUD operations on DB
+
+Take Sudo Access sudo su
+dnf module list (It is used to display information about modular packages in DNF)
+Name                   Stream            Profiles                                         Summary
+mariadb                10.11             client, galera, server [d]                       MariaDB Module
+maven                  3.8               common [d]                                       Java project management and project comprehension tool
+nodejs                 18                common [d], development, minimal, s2i            Javascript runtime
+nodejs                 20                common [d], development, minimal, s2i            Javascript runtime
+Hint: [d]efault, [e]nabled, [x]disabled, [i]nstalled
+
+If a stream does not have any marker, it usually means it is not enabled, but it is available for enabling. It could also imply that the stream is in its default state as per the repository's configuration.
+
+ChatGPT
+-------
+In your output, the default designation [d] appears next to the 'common' profile for both streams (18 and 20). Here's how to interpret it:
+
+Understanding the Default
+
+1. Multiple Stream: Each stream can have its own default profile. In this case:
+   - Stream 18 has the common profile as its default.
+   - Stream 20** also has the common profile as its default.
+
+2. Default Profile: The [d] indicates that the common profile is the default for both streams. It doesn't mean that both streams are the same default; rather, they have their own independent defaults.
+
+Selection of Streams
+
+When you enable a specific stream, you will be using that stream's default profile unless you specify otherwise. For example:
+
+- If you enable Stream 18:
+  dnf module enable nodejs:18
+  Then, when you install nodejs, it will use the common profile from Stream 18.
+
+- If you enable Stream 20:
+  dnf module enable nodejs:20
+  
+  Then, the common profile from Stream 20 will be used.
+
+Conclusion
+
+So, while both streams have a common profile marked as default, they are independent of each other. You can choose which stream you want to work with based on your needs. 
+
+
+using documentation run the commands there.
+
+In the documentation it is given dnf module disable nodejs -y [disables both 18 and 20]
+but siva used the command
+dnf module disable nodejs:18 -y [this command also same as above disables both 18 and 20 check dnf module list]
+Name                   Stream            Profiles                                         Summary
+nodejs                 18 [x]            common [d], development, minimal, s2i            Javascript runtime
+nodejs                 20 [x]            common [d], development, minimal, s2i            Javascript runtime
+Hint: [d]efault, [e]nabled, [x]disabled, [i]nstalled
+
+
+the he enabled nodejs:20 same as per documentation. after permoring dnf module enable nodejs:20 if you use dnf module list you can see 20 is enabled.
+Name                   Stream            Profiles                                         Summary
+nodejs                 18                common [d], development, minimal, s2i            Javascript runtime
+nodejs                 20 [e]            common [d], development, minimal, s2i            Javascript runtime
+Hint: [d]efault, [e]nabled, [x]disabled, [i]nstalled
+
+after enabling nodejs:20 then you install nodejs by using dnf install nodejs -y then automatically 20 version will be installed.
+
 Program needs that runtime(Software)
 
-installed nodejs
+installed nodejs (since our backend application is nodejs we installed nodejs)
 
 usually applications can be run by system/functional/daemon users...
+useradd expense (this is system user)
 
 create a seperate folder for application is a good practice
 
 application is somewhere in internet, developer is giving the location
+https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
 
+in further, sessions we will get to know how our application went to that location and who placed our application there.
+
+curl also we can use as wget if we use -o with curl command
+
+ChatGPT
+--------
+The commands you're using are for installing Node.js and its package manager, npm, on a system that uses the DNF package manager (like Fedora or RHEL-based distributions).
+
+1. dnf install nodejs -y:
+   - This command installs Node.js. The '-y' flag automatically answers "yes" to any prompts during the installation process, allowing it to proceed without user intervention.
+
+2. npm install:
+   - After Node.js is installed, this command runs npm (Node Package Manager) to install all the dependencies specified in the 'package.json' file of your current project directory. If you don’t have a 'package.json' file, it won’t install anything.
+
+In summary, you're setting up a Node.js environment and installing any required packages for your project.
+
+cat packages.json
 npm install --> install the libraries/dependencies
+in package.json our developers will write what dependencies are needed. with the command npm install command it will read dependecines in package.json file and install them.
 
 yum install nginx -y --> automatic download and installation
 systemctl start nginx --> runs the service automatically
+
+When you install Nginx using yum install nginx -y, It installs the Nginx service unit file in /usr/lib/systemd/system/nginx.service. You can manage the Nginx service using systemd commands like
+sudo systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl status nginx
+
+Services like Nginx, Apache, and others usually come with a pre-defined systemd service file included in the package, typically found in /usr/lib/systemd/system/
+
+Service
+--------
+A service is a background process or daemon that runs to provide functionality to the system or to other applications. Examples include web servers (like Nginx), database servers (like MySQL), and many other services.
+
+init
+-----
+The term "init" refers to the initialization system in Unix-like operating systems that is responsible for booting the system and managing system processes. It is the first program started by the kernel during the boot process and has the process ID (PID) of 1.
+
+The init system manages the starting, stopping, and supervision of system services (or daemons) and handles tasks like logging in users, managing system states (like shutting down or rebooting), and controlling the overall system operation.
+
+Different init systems have evolved over time, including:
+a) SysVinit: The traditional init system that uses shell scripts for managing services.
+b) Upstart: An event-based init system that was developed to replace SysVinit.
+c) systemd: A more modern init system that provides parallel service startup, dependency management, and various other features aimed at improving boot times and system management.
+
+Systemd is now widely used in many Linux distributions due to its comprehensive features and efficiency.
+
+systemd
+--------
+systemd is an init system and service manager for Linux operating systems. It is responsible for booting the system, managing services, and handling system resources.
+Features:
+a) Parallel Service Startup: Starts services in parallel, improving boot times.
+b) Service Dependencies: Manages dependencies between services to ensure they start in the correct order.
+c) Socket and D-Bus Activation: Services can be started on demand when needed.
+d) Timers: Replaces cron for scheduling tasks.
+
+systemctl
+----------
+systemctl is a command-line utility used to interact with systemd. It allows you to control and manage services, check their status, and modify system settings.
+
+Common Commands:
+a) systemctl start <service>: Start a service.
+b) systemctl stop <service>: Stop a service.
+c) systemctl status <service>: Check the status of a service.
+d) systemctl enable <service>: Enable a service to start at boot.
+e) systemctl disable <service>: Prevents the service from starting at boot
+f) systemctl restart <service>: Stops and then starts the service again.
+g) systemctl reload <service>: Reloads the service configuration without stopping it (if supported).
+h) systemctl list-units --type=service: Lists all active services.
+i) journalctl -u <service>: Displays logs related to a specific service.
+
+Service Files
+---------------
+Services are defined by unit files, typically located in /etc/systemd/system/ (for user-defined services) or /usr/lib/systemd/system/ (for system-installed services). These files contain configurations specifying how the service should start, stop, and behave.
+
+Summary
+--------
+a) systemd: The underlying system that manages services and the system itself.
+b) systemctl: The command-line tool you use to control systemd and its services.
+
+Think of systemd as the engine running your car and systemctl as the steering wheel you use to control where the car goes.
 
 systemctl service.....
 
@@ -249,9 +438,11 @@ application is manually configured by us, you can't run systemctl commands to st
 
 systemctl will give an option to configure our application as automatic start/stop and restart
 
-/etc/systemd/system --> create your service file in this directory..
+/etc/systemd/system --> create your service file in this directory.. [after creating a service file you can use systemctl start/stop and restart]
 
 backend.service --> .service is also mandatory
+
+Format for creating a Service.
 
 [Unit]
 Description=amazon-ssm-agent
@@ -274,13 +465,33 @@ RestartSec=90
 [Install]
 WantedBy=multi-user.target
 
+The above is amazon.ssm_agent.service file sample no need to worry. he just pasted for an idea. our service file description is in expense documentation.
 
-java/npm install --> it is configured already
+give mysql private ip in backend.service file. this is for security reasons. within the servers communication it is preferred to give private ip.
+
+Developer will tell only which programming language and which version of it. we have to do remaining.
+How to create an application as systemctl service is also our duty.
+application environment and when application should start developers will tell us like
+Environment=DB_HOST="<MYSQL-SERVER-IPADDRESSES>"
+ExecStart=/bin/node /app/index.js
+
+yum search mysql --> you will get all mysql packages installed
+
+daemon --> like devil --> it will run for infinite time.
+
+if you type systemctl start backend --> it will directly go and search in /etc/systemd/system kernel developers configured in this way if someone types this command it will go in this folder --> it starts this ExecStart=/bin/node /app/index.js
+
+java/npm install --> it is configured already (i.e find the particular folder and read package.json and bring the dependencies)
+
+in some os wget is not installed but curl is installed in all so used curl -o not wget.
 
 service/application --> public access this, this should be running
+
+programming language you cannot start and stop
+application you can start and stop [programming language different service different]
 
 :wq --> write and quit
 :wq! --> force write
 :q! --> force
 
-32:44
+Till backend Service he said. project not completed fully due to time constraint. he said in next session he will complete the project.
