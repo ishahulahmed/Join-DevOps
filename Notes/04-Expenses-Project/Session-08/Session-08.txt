@@ -1,10 +1,8 @@
 Session Overview
 -----------------
-a) MySQL
-b) Backend
-c) Frontend
-d) Public vs private IP
-e) Forward vs Reverse proxy
+a) How DNS works
+b) Symlink vs Hardlink
+c) Linux Folder Structure
 
 
 systemctl status mysqld

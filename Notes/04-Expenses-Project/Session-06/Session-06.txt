@@ -1,3 +1,12 @@
+Session Overview
+-----------------
+a) Process Management
+b) Network Management
+c) RDBMS
+d) Expenses project configuration
+e) MySQL
+f) Backend
+
 Write Points What you Learned in Course
 ----------------------------------------
 Experience with Linux Server admin activities like user, service, package, network and process management.
