@@ -6,25 +6,95 @@ c) Frontend
 d) Public vs private IP
 e) Forward vs Reverse proxy
 
+Launch 3 Instances --> RHEL-9 --> Launch Instance
 
-systemctl status mysqld
+Inside the database server we have schemas. In schemas we have tables.
+you can use Mobaxterm if super putty is not working. due some OS issues for few OS super putty is not working.
+
+even you can use git bash ssh ec2-user@ip-address
+
+Take sudo access and follow expense documentation to install mysql, backend and frontend.
+
+we will use following commands during troubleshooting:
+systemctl status mysqld 
 netstat -lntp --> 3306 port should be opened for mysql
 ps -ef | grep mysqld
 
+mysql [just mysql and enter then you will connect to the database if everythign configured correctly]
+show databases;
+exit
+
+Now, days version releases are coming faster. so, our operating systems are supporting multiple version. we can enable the version which we want and use it and disable other versions which are not needed.
+
+dnf module disable nodejs -y [this will disable the 18 version inside our server] [we know it will disable all the versions]
+
+versions and programming lanaguages these decisions are taken by architects.
+
+we are creating an user for this application only
+useradd expense
+
+curl -o (here -o means output)
+
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+here, we are storing the zip file /tmp/backend
+
+you don't need to understand node.js development. you need to understand node.js structure.
+we are not windows operating system developers. but, we know how windows works as we know its structure.
+
+In Job Description if there is Java means. it doesn't mean you need to know java. it means you need java structure.
 
 NodeJS Structure
 --------------------
 .js files --> java script files
 package.json -> developers mention the dependencies and thier version
-				it is a build file
-every language will have one build file
+	        it is a build file also.
+every language will have one build file [pom.xml like in java]
 package.json --> nodejs
 pom.xml --> java
 requirements.txt --> python
 
-install the dependencies --> npm install
+all programming languages principles are same even though their languages are different. In those principles these build file etc is also one principle.
+ 
+install the dependencies --> npm install [in which folder you are running this command. it will read the package.json in that folder and install its dependencies]
 
-49.204.198.60
+if dependencies are not downloaded properly our code will not work.
+
+why we need to give priave-ip?
+if we take a home netowrk there will be a modem and all other devices like laptop, computer and mobile etc are connected to modem wifi.
+
+if you enter facebook.com in your laptop first request will go to the modem. it will check if facebook.com servers in our network.
+do you think facebook.com is in our home? No. so, request needs to go out. so, model will send request to isp (internet service provider). 
+if you give domain or ip-address which is not in the network (i.e your home network). modem responsibility is simply sending that request to isp from there isp will handle that request.
+
+here, modem will have two interfaces
+1. public 
+2. private
+
+in your command prompt if you give ipconfig [windows cmd]
+Wireless LAN adapter Wi-Fi:
+
+   Connection-specific DNS Suffix  . :
+   IPv4 Address. . . . . . . . . . . : 192.168.0.104  --> this is my ip-address
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.0.1
+
+but if you go into internet and search for what is my ip address
+https://whatismyipaddress.com/ --> it will give your ip information
+My IP Address is:
+IPv4: ? 49.204.197.154
+
+My IP Information:
+ISP: Beam Telecom Pvt Ltd
+City: Akkarampalle
+Region: Andhra Pradesh
+Country: India
+
+192.168.0.104 --> this is private-ip address
+49.204.197.154 --> this is public-ip address this is given by isp
+
+49.204.198.60 --> this is public-ip address shown to siva same used in diagram.
+
+why we have like this means this is a concept of NAT. (Network Address Translation)
 
 NAT
 2^32 total IP Address
@@ -167,3 +237,4 @@ you will pay only max 200rs.
 
 I should transfer my domain to AWS...
 
+20:22
