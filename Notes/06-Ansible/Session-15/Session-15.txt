@@ -1,0 +1,9 @@
+Session Overview
+-----------------
+a) Push vs Pull
+b) Install Ansible
+c) Adhoc commands
+d) XML vs JSON vs YAML
+e) Playbooks
+
+
