@@ -6,4 +6,79 @@ c) Adhoc commands
 d) XML vs JSON vs YAML
 e) Playbooks
 
+disadvantages of shell scripting
+---------------------------------
+1. no idempotency --> idempotency means a function or process that produces the same result regardless of how many times it is performed.
+2. no error handling
+3. Hard to understand
+4. Homogeneous --> means only works for one distro
+5. not scalabale --> you cannot use shell script for multiple servers at a time
+6. imperative type of programming (we need to give everything to computer as instruction. it will execute line by line and syntax is tough in imperative)
+
+declarative syntax like ansible, terraform and kubernetes these will follow declarative style. sequence is not an issue and syntax is easy and self explanatory. you will understand this slowly.
+
+configuration management
+-------------------------
+sever should be ready with application. [it will be ready only after configuring it] 
+
+when we create a server there will be nothing in it. it is just like a plain server. so, how should we make it ready or what are the things we are doing as part of configuration.
+
+install application runtime --> like nodejs or java etc
+install system packages
+install appliction dependencies
+download the code
+create users, permissions, directories
+create sytemctl servies
+
+All these are configuration management. it is very difficult to do them with shell scripting. At a time doing 100's of servers with shell script or manually is very difficult that is we have configuration management tools.
+
+CM tools --> puppet, chef --> old
+Ansible --> new
+old tools have some challenges they are not scalable. syntax is tough there was need to learn programming language. chef we need Ruby language. it was tough.
+
+push vs pull
+-------------
+Push vs Pull this is a architecture style in IT
+
+Our friend sent a courier. he called us this morning and said i am sending you a courier today it will come to hyderabad.
+Delhi --> Hyd
+
+so, we go everyday to local dtdc office ask whether we have recieved any courier. they will check every time we go and ask them and tell us whether received or not this is one way.
+
+1. asking DTDC office every day --> Pull 
+2. don't do anything, when letter comes DTDC deliver to you --> Push
+
+which way is better obviously second way is better.
+
+Pull means everytime we goign and cheking whether received or not.
+Push means when it is received automatically recieve notification.
+
+For Example Facebook if send a message to friend
+- going and checking everytime that person replied or not is pull based
+- whenever we get message we are getting a notification or emaily is push based
+
+pull
+----
+In pull based one system going to another sytem and checking whether changes or information received or not. what happnes then
+
+1. internet traffic increases
+2. unnecessary bandwidth consumption
+3. power and system resources
+4. cost
+
+push
+----
+In push based we can save the above
+active notifications
+
+generally, in 99% cases we prefer push based architecture. in few cases we prefer pull based architecture. we will understand those cases slowly.
+
+chef, puppet these were pull based architecture.
+
+
+
+
+
+
+10:27
 
