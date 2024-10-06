@@ -75,10 +75,54 @@ generally, in 99% cases we prefer push based architecture. in few cases we prefe
 
 chef, puppet these were pull based architecture.
 
+Can you check manually inside a server what programs, packages installed, directories created and users created that is very difficult. if one ok suppose if there are 10 or 100 now this is big hectic task.
+
+For example if you take shell scripting then if you see the shell script we can understand what are things we did inside the server. That is reading the configuration of the server. checking manually inside the server is impossible or difficult. But, if you see the script that can be ansible, shell or chef we can understand what is inside the server. i.e reading the configuration of the server.
+
+if you create configuration once that is not enough in future you may need to update the configuration. some changes may expire then we need to delete the configuration.
+
+CRUD is performed everywhere even for configuration.
+CRUD --> create, read, update and delete.
+
+In pull based we will schedule the server for every 30 mins (here example) to go the Configuration Management Server and Check for Changes. If there are changes update those changes yourself. 
+
+So, this Node Server will go to CM Server every 30 mins check for changes if there are changes then they will download those changes and run those changes and update themselves.
+
+Do you think every 30 Minutes we will have changes --> No [So, Ansible came into picture]
+
+Ansible connects through SSH protocol to Node. For pull based he said not SSH but some other kind of protocol. 
+Here servers (node) going and cheking those things will be not there. 
+
+here if we want to create a configuration we will write a file and upload it in Configuration Management Server from that server we will directly push it.
+for example i want some configuration in NODE-1 then we will write that configuration from CM Server we will push it to NODE-1. it will go to NODE-1 and runs automatically.
+
+As, i said in some cases pull will be useful. imagine there is application is running in production and users using it application like amazon. your getting lot of crores of business. suddenly due to some ignorance an employee made some changes in NODE-1 that is causing application down in NODE-1 server. 
+
+when will be the application be up? --> when it automatically resets in next 30 mins
+
+we made changes in NODE-1 after 30 mins it will go and check with CM Server and see there are differences between them. Then NODE-1 download the changes and automatically resets.
+
+This is possible in pull based but this automatic reset is not possible in push based. in these cases push based will not be useful.
+But, we will keep aside this one case. Because, we have monitoring tools if a server is down we will get an alert immediately we will check and push the changes. we can follow this monitoring mechanism.
+
+100% no concept is correct. we will check the pros and cons and depending upon our project requirements we will follow what is needed.
+
+Mostly, push is good for our application but you need to do some monitoring on the service what is going on.
+
+
+This is already mentioned in github you can read them.
+https://github.com/daws-78s/concepts/blob/main/ansible.MD
+
+Whatever the disadvantages we have in shell we can address them in ansible.
+
+Where Ansible is installed we will call it ansible master server remaining we will call as ansible remote nodes.
+
+Take two instance name one as Ansible-Master and other as Ansible-Node
+Create EC2 Instante --> t2.micro --> Launch Instance
 
 
 
 
 
-10:27
+19:42
 
