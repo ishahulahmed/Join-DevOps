@@ -121,8 +121,278 @@ Take two instance name one as Ansible-Master and other as Ansible-Node
 Create EC2 Instante --> t2.micro --> Launch Instance
 
 
+Ansible Installation
+--------------------
+In Master Server
+sudo dnf install ansible -y
+
+In Node we won't do any installations
+
+Ansible is developed using python. That is also the reason why ansible popular now days. first it was popular as push based. 
+But, in some cases pull was also required. so, again they incorporated pull also in ansible.
+
+First, we will learn push based then later we will discuss pull based.
+
+From Master Server we will do changes everything in Node Server.
+
+Adhoc commands
+---------------
+Ansible should be able to do the ssh to the node server. so security groups in node server should allow it. port no 22 should be open in node.
+
+SSH protocol
+ansible -i <inventory> -e ansible_user=ec2-user -e ansible_password=DevOps321
+inventory means we will mention ip-address there.
+
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321  [this command he has not used i don't whether it works or not]
+all means [we are connecting to all the ip-address's mentioned here]
+
+This is almost like 
+ssh -i ec2-user@ip-address
+
+i tried the above command and i got error as
+ERROR! No argument passed to command module
+
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m ping [this is the first ansible command he used in video]
+Linux --> Commands [in linux we will call commands]
+Commands = Ansible --> modules/collections [in ansible we call command as modules/collections]
+
+Previoulsy, they used to call modules now it is called collections.
+
+ping means you are asking are you alive then it is responding with pong yes i am alive.
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m ping [use this the node will pong you]
+172.31.16.28 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m ping  --> To check whether we are able to reach node or not
+
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m dnf -a "name=nginx state=installed" --> To Install a nginx on node
+[-a here means arguments]
+You will get error "This command has to be run under the root user"
+
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m dnf -a "name=nginx state=installed" -b
+[-b is nothing but become]
+
+-b --> become root
+
+Ansible syntax is self-explanatory
+
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m dnf -a "name=nginx state=installed" -b
+172.31.16.28 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Installed: nginx-1:1.20.1-16.el9_4.1.x86_64",
+        "Installed: redhat-logos-httpd-90.4-2.el9.noarch",
+        "Installed: nginx-core-1:1.20.1-16.el9_4.1.x86_64",
+        "Installed: nginx-filesystem-1:1.20.1-16.el9_4.1.noarch"
+    ]
+}
+
+Ansible, is telling i have made the changes and those changes are.
+
+if you run again the same command you will get result as below
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m dnf -a "name=nginx state=installed" -b
+172.31.16.28 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "msg": "Nothing to do",
+    "rc": 0,
+    "results": []
+}
 
 
+green colour means success
+yellow colour means it changed something and success
+red colour means failure
 
-19:42
+if i want to run nginx in node server then the module name here is
+ansible -i 172.31.16.28, all -e ansible_user=ec2-user -e ansible_password=DevOps321 -m service -a "name=nginx state=started" -b
+The result is yellow so changed and success
+take node ip-address and search in browser and see test page is coming or not. if it is coming then nginx is running successfully.
+
+Now, can i go ahead and do every configuration using this big commands. is it painful or not? --> yes
+
+In Linux 
+First We Manually configured servers --> through commands [it was painful every command we need to run one by one]
+So, we wrote Shell Script --> all commands in a file, run that file one time
+
+Similarly there are
+Adhoc commands --> they are painful manual way
+Here we call it as Playbook --> keep all your modules in a single file with YAML syntax. Run that file. it is done.
+
+Keep your modules or collections in a file that we call it as playbook. it follows YAML syntax.
+
+YAML --> Yet another markup language.
+
+DTO --> Data Transfer Objects
+------------------------------
+when you go to facebook.com and sign-up for a new account. who is carrying your information from your browser page to facebook server.
+i.e nothing but Data Trasnfer Objects --> Mark up Language
+
+Markup Means putting your information in tags
+for example
+<h1>I am learning YAML</h1>
+<h2>I am learning</h2>
+this is html
+
+our browser is understandign these tags i.e markup's and showing us content according these formats.
+
+HTML --> Hyper test markup language
+XML --> extensive markup language
+
+earlier XML was so much popular. for example how facebook login information will go to facebook server is through XML if used.
+<User> 
+   <Username>sivakumar</Username>
+   <Password>admin123</Password>
+</User>
+
+This is how data is passing now the other system will query this information in database then it will tell this username and password is correct or not.
+
+XML
+---
+if we go to bank they will give a form which is template for them. we can take our own letter and give them but every person will write differently there will no standard template followed.
+
+Name 
+Amount 
+Date
+One person may write in the above formate
+
+Amount 
+Date
+Other Person may write like this
+
+so, it will be difficult for the clerk to enter information. he is whole energy will go in searching information. That is why they come up with forms and templates. now, clerk will enter information fastly because he is habituated to the template.
+
+for example, if we want to store a student information in XML this is also a template
+<Student>
+    <Name>Sivakumar</Name>
+    <DOB>2020-01-01</DOB>
+    <Address>Gandhi Nagar, KR Puram, Bengaluru</Address>
+</Student>
+
+This is a student object. we have the name, dob and address fields in it.
+
+for example if there are two addresses temporary and permanent.
+<Student>
+    <Name>Sivakumar</Name>
+    <DOB>2020-01-01</DOB>
+    <Addresses>
+        <PermAddress>
+            <AddressLine1>D-203</AddressLine1>
+            <AdressLine2>Sai Apartments</AddressLine2>
+            <Street>Gandhi Nagar</Street>
+        </PermAddress>
+        <CurrentAddress>
+               <AddressLine1>D-203</AddressLine1>
+               <AdressLine2>Sai Apartments</AddressLine2>
+               <Street>Gandhi Nagar</Street>
+        </CurrentAddress>
+    </Addresses>
+</Student>
+
+Student - Object, Name-Field, DOB-Field, Addresses-Object[acts as Object this is also field of Student which contains list of Addresses], PermAddress-Object [this is also object], AddressLine1-Field of PermAddress
+
+if i want to mention multiple student in a XML
+<Students>
+   <Student1>
+      <Name>Sivakumar</Name>
+      <DOB>2020-01-01</DOB>
+      <Addresses>
+         <PermAddress>
+            <AddressLine1>D-203</AddressLine1>
+            <AdressLine2>Sai Apartments</AddressLine2>
+            <Street>Gandhi Nagar</Street>
+         </PermAddress>
+         <CurrentAddress>
+               <AddressLine1>D-203</AddressLine1>
+               <AdressLine2>Sai Apartments</AddressLine2>
+               <Street>Gandhi Nagar</Street>
+         </CurrentAddress>
+      </Addresses>
+   </Student1>
+   <Student2>
+      <Name>Sivakumar</Name>
+      <DOB>2020-01-01</DOB>
+      <Addresses>
+         <PermAddress>
+            <AddressLine1>D-203</AddressLine1>
+            <AdressLine2>Sai Apartments</AddressLine2>
+            <Street>Gandhi Nagar</Street>
+         </PermAddress>
+         <CurrentAddress>
+               <AddressLine1>D-203</AddressLine1>
+               <AdressLine2>Sai Apartments</AddressLine2>
+               <Street>Gandhi Nagar</Street>
+         </CurrentAddress>
+      </Addresses>
+   </Student2>
+</Students>
+
+now, this will become list of students. now programming languages query effectively.
+you check this is correctly or not. search XML Validator in google
+https://jsonformatter.org/xml-validator
+
+when siva joined everywhere there was XML. few technologies like Oracle Middleware, Jboss middleware were using XML only. Middleware technologies were 100% dependent on XML.
+
+Opening and closing everytag this was bit repetitive and time taking. so, they come up with JSON
+
+JSON --> JavaScript Object Notation
+------------------------------------
+in Json everything starts with flower braces. if i want to give information in JSON it will be like
+{
+  "Username": "sivakumar",
+  "Password": "admin123",
+  "DoorNo": 123
+} 
+
+you can see Json is easy then XML. for number no need to give double quotes in JSON and after every field there should be a separator (,).
+
+if the same student object if i want to place JSON means
+{
+  "name": "sivakumar",
+  "dob": "2020-01-01",
+  "address": "D-203, Gandhi Nagar, Bang"
+}
+
+this is an object if i want to maintain list of addresses in the object.
+[] --> denotes list
+{} --> map/dictionary (
+
+{
+  "name": "sivakumar",
+  "dob": "2020-01-01",
+  "address": [
+      { 
+         "addressline-1": "D-203", 
+         "addressline-2": "gandhi nagar",
+         "city": "bangalore"
+      },
+      {
+         "addressline-1": "D-203", 
+         "addressline-2": "gandhi nagar",
+         "city": "bangalore"
+       }
+     ]
+}
+
+YAML --> Yet another markup language
+------------------------------------
+based on indentation
+programs (i.e for frontend to backend communication) are still using JSON.
+Ansible, kubernetes and cloud formation here we are using YAML.
+
+54:45
+
+
 
