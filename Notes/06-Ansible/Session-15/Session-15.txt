@@ -367,7 +367,7 @@ if the same student object if i want to place JSON means
 
 this is an object if i want to maintain list of addresses in the object.
 [] --> denotes list
-{} --> map/dictionary (
+{} --> map/dictionary 
 
 {
   "name": "sivakumar",
@@ -392,7 +392,283 @@ based on indentation
 programs (i.e for frontend to backend communication) are still using JSON.
 Ansible, kubernetes and cloud formation here we are using YAML.
 
-54:45
+Indentation means space. if i want to create a user object
+name: sivakumar
+dob: 2020-01-01
+
+key:value
+
+if i want to create student object
+name: sivakumar
+dob: 2020-01-01
+address: d-203, gandhi nagar, bengaluru
+
+- = list in YAML
+
+if i want to give list of address
+name: sivakumar
+dob: 2020-01-01
+addresses:
+- addressline-1: d-203
+  addressline-2: gandhi nagar
+  city: bengaluru
+
+- addressline-1: d-203
+  addressline-2: gandhi nagar
+  city: bengaluru
+gender: male
+
+search YAML validation
+https://www.yamllint.com/
+
+if i want to write list of students
+- name: sivakumar
+  dob: 2020-01-01
+  addresses:
+	- addressline-1: d-203
+	  addressline-2: gandhi nagar
+	  city: bengaluru
+	  
+	- addressline-1: d-203
+	  addressline-2: gandhi nagar
+	  city: bengaluru
+  gender: male
+- name: sivakumar
+  dob: 2020-01-01
+  addresses:
+	- addressline-1: d-203
+	  addressline-2: gandhi nagar
+	  city: bengaluru
+	  
+	- addressline-1: d-203
+	  addressline-2: gandhi nagar
+	  city: bengaluru
+  gender: male
 
 
+Now, we will write ansible playbooks. To write the play book create a repo in github and store your files in it.
+he created a repository in github named ansible and cloned it in his local machine and used vs code to add files in this repo.
 
+yaml extension name is yaml or yml
+in ansible everything is considered as list whether it as one list or more
+so always start an ansible file with - [very important] [after - give space]
+
+01-ping.yaml
+- name: ping the server
+  hosts: web
+  tasks: #list of tasks/modules/collections
+  - name: pinging the server
+    ansible.builtin.ping:
+
+
+generally, you don't need to remember simply search for ansible ping server you will get something [i.e ansible documentation]
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/ping_module.html
+
+ansible.builtin means ansible people only developed originally
+few will come from community also [means outside people contributed]
+https://docs.ansible.com/ansible/latest/collections/index.html
+
+collection index here you can get all documentation for different modules
+with ansible not only linux servers, we can create ec2 servers, create google cloud, use netapp, kubernetes and many more.
+
+it is easy to develop new modules using python scripting that is 
+
+Namespace --> Collections [each name space will have collections] --> modules [each collection will have modules]
+
+inventory
+---------
+here inventory means lists of hosts [i.e which hosts you are targeting]
+
+he created a inventory.ini file in vs code
+
+if you want to give a group of servers you can give like this
+[web]
+172.31.22.254
+172.31.22.255
+172.31.22.256
+172.31.22.257
+172.31.22.258
+172.31.22.259
+
+in the 01-ping.yaml file if i give hosts a web
+- name: ping the server
+  hosts: web
+  tasks: #list of tasks/modules/collections
+  - name: pinging the server
+    ansible.builtin.ping:
+
+then it will go the inventory.ini file and whatever that is there below [web] it will ping all those hosts.
+
+[web]
+172.31.22.259
+
+[db]
+172.31.22.251
+
+[app]
+172.31.22.212
+
+this is called ini format i.e grouping the servers
+if you want to connect all the server of different groups then you can give like this in your ini file
+[all:children]
+web
+db
+app
+this is group of groups
+in host: all [give all here]
+
+172.31.22.132 --> keeping as unlisted not including any group you can also put like this
+
+[web]
+172.31.22.132
+
+in ansible server clone this
+https://github.com/ishahulahmed/ansible.git
+
+git clone https://github.com/ishahulahmed/ansible.git
+cd ansible
+
+ansible -i inventory.ini web --list-hosts
+ hosts (1):
+    172.31.22.132
+
+ansible will go to inventory.in and list what is there in web
+
+ansible -i inventory.ini all --list-hosts
+hosts (3):
+    172.31.22.132
+    172.31.24.249
+    172.31.24.243
+
+ansible will bring hosts in all group
+
+ansible -i inventory.ini --help [to get help for inventory commands]
+
+generally grouping the hosts is best recommended way. so that we can target the group which we want.
+
+ansible-playbook -i inventory.ini -e ansible_user=ec2-user -e ansible_password=DevOps321 01-ping.yaml
+[this is a playbook command not adhoc command that's why ansible-playbook]
+PLAY [ping the server] ************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [172.31.23.57]
+
+TASK [pinging the server] *********************************************************************************************************************************
+ok: [172.31.23.57]
+
+PLAY RECAP ************************************************************************************************************************************************
+172.31.23.57               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+In interviews, they are generally asking to share your screen and write a playbook.
+for example write a play book to install nginx and run it
+
+- name: install  and run nginx
+  hosts: web
+  become: yes # equal to -b in adhoc commands, getting root access
+  tasks:
+  - name: install nginx
+    ansible.builtin.package:
+    	name: nginx
+        state: latest
+    
+
+
+if you don't know how to install search ansible installl package --> you will get ansible documentation --> https://docs.ansible.com/ansible/latest/collections/ansible/builtin/package_module.html
+
+ansible.builtin.yum: --> this will work only for redhad based
+ansible.builtin.package: --> this will work for all distributions
+
+in ansible documentation parameters are what we supply for a module if the parameter is as required then it compulsory to provide it. if there is nothing then it is not mandatory. see documentation.
+
+for ansible.builtin.package module parameters name and state are required. so we need to provide them. see documentation
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/package_module.html#attributes
+
+example
+- name: Install ntpdate
+  ansible.builtin.package:
+    name: ntpdate
+    state: present
+
+if our expense project backend if put few servers redhat and few ubuntu. will it be advantage or disadvantage? --> that's a disadvantage
+even though ansible supports heterogenous nature [supporting different os like pakcage module] but interms of business and technical way also it is wrong decision.
+
+if in a project you different servers what is the it is completely disadvantage to us. so lets go with redhat [you can use dnf or yum]
+
+search ansible install package dnf --> https://docs.ansible.com/ansible/latest/collections/ansible/builtin/dnf_module.html
+here for parameters they have not given which are required to provide. siva was also confused but any how continue.
+
+search ansible start service --> https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html
+
+- name: install and run nginx
+  hosts: web
+  become: yes # equal to -b in adhoc commands, getting root access
+  tasks:
+  - name: install nginx
+    ansible.builtin.dnf:
+    	name: nginx
+        state: latest
+  - name: start nginx
+    ansible.builtin.service:
+    	name: nginx
+        state: started
+        enabled: yes
+
+ansible-playbook -i inventory.ini -e ansible_user=ec2-user -e ansible_password=DevOps321 02-nginx.yaml
+PLAY [install and run nginx] ******************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [172.31.23.57]
+
+TASK [install nginx] **************************************************************************************************************************************
+ok: [172.31.23.57]
+
+TASK [start nginx] ****************************************************************************************************************************************
+changed: [172.31.23.57]
+
+PLAY RECAP ************************************************************************************************************************************************
+172.31.23.57               : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+we already installed nginx so that's why ok. but we have not enable so changed.
+
+will it take .ini in the command and give just file name --> yes
+ansible -i inventory --> yes
+
+- name: install and run nginx
+  hosts: web [if here i give ip-address]
+
+is it still required to give invetory.ini file in command
+
+this is a small disadvantage in ansible even though you gave ip-address directly still ansible will expect invetory.ini file for running playbook
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [172.31.23.57]
+
+gathering facts will come implicitly before running our task it will query the server first and pull information from it and run the commands according to it.
+by default gathering facts is yes. if you want you can keep it as no.
+
+can we remove packages with ansible --> yes put state: remove
+in one ansible plabook you can run as many tasks as you want.
+
+ansible-playbook -vvv -i inventory.ini -e ansible_user=ec2-user -e ansible_password=DevOps321 02-nginx.yaml
+if you give -vvv you will get all the information that is running in the background while ansilbe is working. you will get heavy information.
+
+is ansible.builtin.dnf: ansible.builtin.service: is a function --> it is like a command
+with practise you will understand ansible modules and it's parameters and how to write them
+
+ansilbe is very simple then shell-scripting
+
+here we you have setup the server with username and password and used username and password in ansible command. in the realtime how will you use with key based.
+siva said keybased is not a good thing. if ansible is dealing with thousands of server. if you are using keybased then you need to store that key somewhere.
+ansible server or pull from somewhere. if the key is exposed that's a problem and it is a complex task.
+
+this is all into our infrastructure. for the services in our infrastructure we don't need to give again tight security. if your servers are exposed outside then key based authentication may be a good choice.
+
+for the servers which are internal to your organisation. 
+for entering to home we can keep access. but, for in our home and our family we don't need access to every room inside.
+access --> security.
+
+key is secure if your severs are exposed to outside world.
+can we give username and password in a file instead of command --> yes we will do slowly
+
+
+you can create ec2 instances also with ansible but that is not recommended ansible is not for that purpose.
