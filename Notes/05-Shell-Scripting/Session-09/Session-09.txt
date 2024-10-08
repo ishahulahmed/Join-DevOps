@@ -1,0 +1,10 @@
+Session Overview
+-----------------
+a) Shell introduction
+b) Github signup
+c) Repo creation
+d) GitHub token
+e) Committing and pushing changes to GitHub
+f) Quiz
+
+
