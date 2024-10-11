@@ -7,6 +7,7 @@ d) Public vs private IP
 e) Forward vs Reverse proxy
 
 Launch 3 Instances --> RHEL-9 --> Launch Instance
+use expense-documentation --> https://github.com/daws-78s/expenses-documention
 
 Inside the database server we have schemas. In schemas we have tables.
 you can use Mobaxterm if super putty is not working. due some OS issues for few OS super putty is not working.
@@ -15,7 +16,13 @@ even you can use git bash ssh ec2-user@ip-address
 
 Take sudo access and follow expense documentation to install mysql, backend and frontend.
 
-we will use following commands during troubleshooting:
+first install db as per documentation [take sudo access sudo su or sudo su -]
+
+systemctl start mysqld
+after starting mysqld using the above command password will empty for mysql server. so we are setting a password for it.
+mysql_secure_installation --set-root-pass ExpenseApp@1 [here username is root and we are setting up the root password as ExpenseApp@1]
+
+we will use following commands during troubleshooting: [to check whethere db is running or not]
 systemctl status mysqld 
 netstat -lntp --> 3306 port should be opened for mysql
 ps -ef | grep mysqld
@@ -24,9 +31,10 @@ mysql [just mysql and enter then you will connect to the database if everythign 
 show databases;
 exit
 
+Setup Backend as per documentation. Take sudo access first.
 Now, days version releases are coming faster. so, our operating systems are supporting multiple version. we can enable the version which we want and use it and disable other versions which are not needed.
 
-dnf module disable nodejs -y [this will disable the 18 version inside our server] [we know it will disable all the versions]
+dnf module disable nodejs -y [this will disable the 18 version inside our server siva said] [we know it will disable all the versions]
 
 versions and programming lanaguages these decisions are taken by architects.
 
@@ -37,6 +45,7 @@ curl -o (here -o means output)
 
 curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
 here, we are storing the zip file /tmp/backend
+you can use wget also but for flexibility we are using curl here
 
 you don't need to understand node.js development. you need to understand node.js structure.
 we are not windows operating system developers. but, we know how windows works as we know its structure.
@@ -59,12 +68,12 @@ install the dependencies --> npm install [in which folder you are running this c
 
 if dependencies are not downloaded properly our code will not work.
 
-why we need to give priave-ip?
+why we need to give priavte-ip? [in backend.service why we give db private-ip]
 if we take a home netowrk there will be a modem and all other devices like laptop, computer and mobile etc are connected to modem wifi.
 
 if you enter facebook.com in your laptop first request will go to the modem. it will check if facebook.com servers in our network.
 do you think facebook.com is in our home? No. so, request needs to go out. so, model will send request to isp (internet service provider). 
-if you give domain or ip-address which is not in the network (i.e your home network). modem responsibility is simply sending that request to isp from there isp will handle that request.
+if you give a domain or ip-address which is not in the network (i.e your home network). modem responsibility is simply sending that request to isp from there isp will handle that request.
 
 here, modem will have two interfaces
 1. public 
@@ -94,11 +103,39 @@ Country: India
 
 49.204.198.60 --> this is public-ip address shown to siva same used in diagram.
 
+49.204.197.154 --> this is the ip-adress for your entire network [i.e home network and devices connected to that network see diagram]
+
 why we have like this means this is a concept of NAT. (Network Address Translation)
 
+previously, for every sytem there was a ip-address. but, you know what happened Ipv4 got exhausted. so the designers thought if we keep on giving a ip-address for every system our ip-address range will get exhausted.
+
 NAT
-2^32 total IP Address
+2^32 total IP Address [this is the IPv4 range]
 IPV4 exhausted
+
+So, they started giving one ip-address for an netowrk [like you homenetwork one ip-address]
+So, mobile, laptop, computer everythig ip-address is same i.e 49.204.198.60 as per diagram this is called network address translation.
+if communication is happening with in your network then it will be through private ip-address but if it is going out then communication will happen through public ip-address this is called network address translation.
+
+Default Gateway . . . . . . . . . : 192.168.0.1 [this is the gateway our modem ip]
+  Connection-specific DNS Suffix  . :
+   IPv4 Address. . . . . . . . . . . : 192.168.0.104
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.0.1
+
+In your network configuration, the "Default Gateway" refers to the device that routes traffic from your local network to external networks, such as the internet. In your case, the default gateway is set to 192.168.0.1, which is typically the IP address of your router. When your device needs to send data outside of your local network, it forwards that data to the gateway, which then directs it to its destination.
+
+previously, in IRCTC from ip-address only two tickets can be booked. [i.e in your entire home how many devices also you use only two tickets because all devices are connected to same network modem]
+
+if you are searching internet for example any malicious sites or terrorist sites 49.204.198.60 this ip-address will be logged in your isp [i.e modem-ip address] then they can find out who visited those sites easily.
+
+This ip-address [modem] isp will keep on changing it [don't after how much time]. if you need the same ip-address then we have to pay isp 1000rs extra per month.
+
+systemcl status backed will show failed because you have just given ip-address but no username and password in backend.service file
+we have create database server but no table and schema is created. if you give directly to store how can it store without you creating schema and table.
+if i tell to store in wadrobe it cannot store. we have to tell which shelf to store in that wadrobe as an intruction.
+
+we are running operation from backend to database to store data in db.
 
 mysql-server --> this is server
 mysql --> client
@@ -109,29 +146,107 @@ Putty --> SSH client
 facebook.com --> http server
 browser --> http client
 
-expense
-ExpenseApp@1
+so, for every server there will be a client software. database admin will create databases they will not give root access to database they will give you some client access. i.e you can connect from other server to this db.
 
-these credentials are used by our nodejs application to connect
+we cannot go and connect directly to the server. we will install a client package in other server from that client we will connect to the main server. 
+so, we are installing mysql client package in our server.
+dnf install mysql -y
 
-CREATE DATABASE IF NOT EXISTS transactions;
-USE transactions;
+after installing mysql client there is file in /app/schema/backend.sql let us see what is there in it
+cat /app/schema/backend.sql
 
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE DATABASE IF NOT EXISTS transactions; [we are creating a db or schema in a server]
+USE transactions; [using that db]
+
+CREATE TABLE IF NOT EXISTS transactions ( [creating table]
     id INT AUTO_INCREMENT PRIMARY KEY,
     amount INT,
     description VARCHAR(255)
 );
 
-CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
-GRANT ALL ON transactions.* TO 'expense'@'%';
+CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1'; [creating an user]
+GRANT ALL ON transactions.* TO 'expense'@'%'; [informing mysql server to give this user previliges]
 FLUSH PRIVILEGES;
 
+expense
+ExpenseApp@1
+these credentials are used by our nodejs application to connect. these username and password we have already configure in our nodejs code
+
+DbConfig.js [this is the cofiguration we set in our code in DbConfig.js file]
+module.exports = Object.freeze({
+    DB_HOST : '',
+    DB_USER : 'expense',
+    DB_PWD : 'ExpenseApp@1',
+    DB_DATABASE : 'transactions'
+});
 
 
-mysql -h 172.31.45.116 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+mysql -h 172.31.17.214 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+This mysql commnad is connecting to the 172.31.45.116 [mysql-ip-address] with root username [-u means username we gave it as root] and its password ExpenseApp@1 [-p means password we set it as ExpenseApp@1] anad loading this schema  present in location /app/shema/backend.sql
 
-ping google.com
+it is loading that schema means it is running the sql commands present in backend.sql
+
+run this  command 
+mysql -h 172.31.17.214 -uroot -pExpenseApp@1 < /app/schema/backend.sql
+
+after, running this command how to know whether executed or not
+mysql -h 172.31.17.214 -uroot -pExpenseApp@1 [run this command you will get]
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 12
+Server version: 8.0.36 Source distribution
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql>
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| transactions       |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> use transactions;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> show tables;
++------------------------+
+| Tables_in_transactions |
++------------------------+
+| transactions           |
++------------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from transactions;
+Empty set (0.00 sec)
+
+so, we have connected to db successfully from our backend server. now we need start our application then our backend service will run.
+systemctl start backend
+systemctl status backend [active]
+
+if, we got a problem like our application is unable to connect to database. we will ping the db-ip-address
+ping 172.31.17.214 [it will ping nonstop]
+ping -c 3 172.31.17.214 [now it will ping 3 times]
+
+3 packets transmitted, 3 received, 0% packet loss, time 2030ms
+0% packet loss means backend server is able to reach database server.
+
+just like to check whether internet is working or not will ping in cmd [windows]
+ping google.com [in cmd this will ping 3 times only]
 
 backend should be able to connect DB server on port no 3306
 
@@ -237,4 +352,4 @@ you will pay only max 200rs.
 
 I should transfer my domain to AWS...
 
-20:22
+31:54
