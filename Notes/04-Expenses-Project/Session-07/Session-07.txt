@@ -248,29 +248,91 @@ ping -c 3 172.31.17.214 [now it will ping 3 times]
 just like to check whether internet is working or not will ping in cmd [windows]
 ping google.com [in cmd this will ping 3 times only]
 
-backend should be able to connect DB server on port no 3306
-
+backend should be able to connect DB server on port no 3306. how to test this?
 telnet <IP-Address> <port-no>
+
+telnet 172.31.29.181 3306
+Trying 172.31.29.181...
+Connected to 172.31.29.181.  [some other lines also like escape character sha2_password will come ignore that these 2 are main]
 
 backend apps usually run on port no 8080
 
-Nginx --> Engine-X
------
+netstat -lntp
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1262/sshd: /usr/sbi
+tcp6       0      0 :::22                   :::*                    LISTEN      1262/sshd: /usr/sbi
+tcp6       0      0 :::8080                 :::*                    LISTEN      14416/node
+
+ps -ef | grep node --> you can see our expense is running
+
+now, backend is finished we will go to frontend.
+
+
+Nginx --> Engine-X (Pronounciation)
+------------------------------------
 http web server
 reverse proxy
 port no --> 80
+
+nginx is a http web server and we will call it as reverse proxy. it runs on port no 80.
+
+if not working check in browser whether it is http or https.
+
+cd /etc/nignx/  --> here all nginx configuration files will be there
+/etc/nginx/nginx.conf --> this is the nginx main config file
+
+if you open this file
+vim nginx.conf
+  server {
+        listen       80;
+        listen       [::]:80;
+        server_name  _;
+        root         /usr/share/nginx/html;  --> this is where we need to keep our frontend website
+
+here, you can see it is listening in port no 80. if you want you can change the port no.
 
 /usr/share/nginx/html --> this is where we need to keep our frontend website
 
 /etc/nginx --> Home directory of nginx
 
-/etc/nginx/nginx.conf --> this is the nginx config file
+
 
 /var/log/nginx/error.log --> this is the location nginx stores logs
 
 /usr/share/nginx/html --> if you keep index.html. that will be served by default
 
+cd /usr/share/nginx/html/
+vim devops.html
+<h1>Hi, I am Learning DevOps with AWS</h1>
 
+in the browser if you give ip-address you will get the default nginx test page. instead of that give like this in browser
+54.89.160.90/devops.html --> you will get this page
+
+what does this mean? web server means a software that server what ever html and frontend files you write. In this /usr/share/nginx/html/ what ever html file you will place you can access that by 54.89.160.90/page.html. if you remove /page.html and give 54.89.160.90 directly it will server the default page.
+
+remove the default content in html directory and download and extract your application.
+In backend we are connecting backend to db but there is no forward and reverseproxy there because we are not hiding anything. But, when connecting frontend to backend we are using reverse proxy terminology because we are hiding backend implementation from users.
+you  will understand in next few lines
+
+Reverse Proxy
+-------------
+nginx is like a waiter. if waiter want to forward the request to backend this waiter should be aware of chef details.
+so, we should give the frontend site in our nginx backend details. Just like how we gave database details to backend. in the same way backend details should be given to frontend. so, frontned can forward requests to backend.
+
+where should be this given means that is in your configuration file.
+cd /etc/nginx/
+ls -l 
+nginx.conf --> main configuration file
+
+you can edit this nginx.conf file. but this is main configuration. without disturbing this we can keep our extra configuration in conf.d directory in /etc/nginx/conf.d
+include /etc/nginx/conf.d/*.conf; --> this line will be there in main nginx.conf file so that we can includ configuration file without disturbing this main configuration file.
+so, this is a general way. softwares will give extra directories to add configurations [custom-configuration] without disturbing the main configuration.
+
+Creating Nginx Reverse Proxy Configuration
+vim /etc/nginx/default.d/expense.conf
+
+Add the following content: [see documentation]
 proxy_http_version 1.1;
 
 location /api/ { proxy_pass http://172.31.32.178:8080/; }
@@ -280,36 +342,121 @@ location /health {
   access_log off;
 }
 
+location /api/ { proxy_pass http://172.31.32.178:8080/; } --> if anyone gives /api/ then send request to our backend server
+give private backend ip
+
+Backend is called API Tier.
+API Tier means it will query db and give the data to Waiter. Waiter will do extra decoration to this data with HTML + CSS + JS
+Frontend --> Data + HTML + CSS + JS
+
+Now, what is Reverse-Proxy.
+we all use VPN to see OTT contents or IPL Matches etc
 
 what is proxy?
 -----------------
 some one on behalf of you == proxy
 
+In mobile we connect to VPN to see some restricted content.
+If that OTT platform has rule to access requests from US only. Then VPN
 VPN will change our location to US...
+
+In Companies we have VPN. generally CISCO VPN.
+We cannot directly access internet in companies we have something called VPN from which will access internet
+
+Here, existing VPN do the mobile know or the OTT platform --> mobile is aware of VPN
+OTT doesn't know. if they find out they will restrict us.
+This is called Forward Proxy.
 
 Forward Proxy
 ----------------
-clients are aware of VPN, but servers are not aware
+Forward Proxy clients are aware of VPN, but servers are not aware.
 
-mobile is aware of VPN
+If we are seeing through mobile means who is client and who is server. obiviously, mobile is client and ott platform is server.
 
-company VPN
----------------
-restrict the websites
-monitor the user requests
+in the same way if you are accessing some site from internet [like docker.com, github.com, jenkins.com etc] in your company network. it means internet is not aware of your VPN only you are aware of your vpn.
+
+mobile vpn purpose is to access restricted content
+
+company VPN Purpose is
+----------------------
+restrict the websites [facebook, instagram etc]
+monitor the user requests [monitoring the users] 
+
+people opening facebook.com and instagram.com and doing timepass
+push project code to your github and your aws account servers
 
 Reverse Proxy
 -----------------
-clients are not aware of proxy/VPN, only servers are aware
+For Example we are connecting to facebook.com. But, facebook.com has many servers inside the facebook network. we don't know how many servers are there in facebook network and to which server we are connecting.
 
+Are you aware of facebook is using proxy? --> No
+
+In Reverse Proxy, clients are not aware of proxy/VPN, only servers are aware.
+
+facebook will keep an nginx, we thing we are sending our requests to facebook.com. but, it is going to nginx server from it is going to the application servers.
+Why we are doing like this because code is running in application server. main code is there in application server that is code to connect to the database.
+if facebook will give us access to the application server code we can see how it is connecting to the database. 
+instead, of that they are giving it to reverse proxy.
+
+In reverse proxy clients are not aware of proxy you don't know where your request is actually going to. you don't know how many servers are there behind this is called reverse proxy.
+
+This is Like Security. You will understand later concepts like SSL Termination
 SSL termination
 Some secure features
+if someone attacks facebook.com. trying to down facebook.com continously running facebook.com by putting it in a loop and running it. for all those thing there will be validations near nginx [ssl termination] to check whether the requests are coming from human, robot or program facebook will take care of few precautions here.
 
+now, we are using reverse proxy in our expense project. nginx is nothing but reverse proxy.
+location /api/ { proxy_pass http://172.31.32.178:8080/; } --> if request comes from /api send it the backend server.
 
-http://54.85.211.179/api/transaction
+give backend server private-ip address in expense.conf file
 
-http://54.85.211.179/api/transaction
+after restaring nginx to check whether it is running correctly or not
+systemctl status nginx
+netstat -lntp
+ps -ef | grep nginx
+telent 172.31.18.227 8080
 
+add amount 5000 Food in Expense App
+right click --> inspect --> Network --> All [to show all files and requests] --> you can see in background where request is going if you add something
+Headers
+Request URL: http://54.89.160.90/api/transaction
+Request Method: POST
+Status Code: 200 OK
+Payload
+{amount: "5000", desc: "Food"}
+amount:"5000"
+desc: "Food"
+
+But if you give amount as text not number then it will fail and application will stop. because backend application will be inactive due to wrong input. you can check this by using command systemctl status backend in your backend server. To keep application working. we can put validation in our html code like giving warning if someone enters text to give number not text.
+
+give text in amount and see what happens
+right click --> inspect --> Network --> All [to show all files and requests] --> you can see in background where request is going if you add something
+Request URL:
+http://54.89.160.90/api/transaction
+Request Method:GET
+Status Code: 404 Not Found
+
+Developers have not provided validations for our expense application we are working on it. start the backend if applications stop due to text entered as input in amount column.
+
+http://54.85.211.179/api/transaction --> request going here if 200 movie
+http://54.85.211.179/api/transaction --> request goin gere if 231 travel
+
+this information is getting stored in db. if you want to verify in backend
+mysql -h 172.31.29.181 -uroot -pExpenseApp@1
+mysql> use transactions;
+mysql> show tables;
+mysql> select * from transaction;
+you can see transactions
++----+--------+-------------+
+| id | amount | description |
++----+--------+-------------+
+|  1 |   5000 | Food        |
+|  2 |   200  | movie       |
+|  3 |   231  | travel      |
++----+--------+-------------+
+3 rows in set (0.00 sec)
+
+this the resposne of request in you sent you can see this in Respone tab 
 {
     "result": [
         {
@@ -329,6 +476,10 @@ http://54.85.211.179/api/transaction
         }
     ]
 }
+
+Further, Session we will get JSON and other even youtube i have videos.
+
+here, you need to understand how request is going from frontend to backend and from backend to db. frontend is giving request to backend. backend is performing crud operations on db.
 
 domain
 google.com
@@ -352,4 +503,4 @@ you will pay only max 200rs.
 
 I should transfer my domain to AWS...
 
-31:54
+1:04:40
