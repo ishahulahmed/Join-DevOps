@@ -481,26 +481,88 @@ Further, Session we will get JSON and other even youtube i have videos.
 
 here, you need to understand how request is going from frontend to backend and from backend to db. frontend is giving request to backend. backend is performing crud operations on db.
 
+Domain Registering
+-------------------
 domain
 google.com
 facebook.com
 twitter.com
 
+humans have aadhaar cards but we cannot remember numbers we prefer names
+but computers are opposite they prefer numbers not names
+
+To, match these two there is a directory called
 DNS --> Domain name system
 
-dictionary for domains
+DNS is dictionary for domains
 
 google.com = 123.48.55.77
 
+In our channel also we discussed about How DNS work but we will discuss again.
 first we need to buy domain
 
-provider
-godaddy
+from provider
+godaddy --> costly
+hostinger --> reasonable
 
-sometimes hostiger will ask for 5000rs... autopay
+search for hostinger india --> other wise it will show in us dollars
+https://www.hostinger.in/
 
-you will pay only max 200rs.
+search your domain in search bar and buy an domain as per your budget. just buy which is cheap cause for practise purpose only.
+give correct address only don't give any wrong address while buying
 
+sometimes hostiger will ask for 5000rs... autopay [for autopay purpose it will show as 5000rs you can login in into your account and cancel it]
+you will pay only max 200rs. no need to worry it is asking 5000rs
+
+after buying the domain
 I should transfer my domain to AWS...
 
-1:04:40
+In AWS we have something called Route 53 in that Registered domains we can buy a domain there but cost is very high there. since here it is costly in aws we are registering in hostinger.
+
+why we need to transfer our domain to aws?
+our infrastructure and everything is present in aws. for ip-address updation and automation purpose it will be really useful when it is hosted in route 53 service. so, we need to transer our domain to aws.
+
+Route 53 --> Hosted zones --> Create hosted zone
+Domain name --> daws78s.online
+Type --> Public hosted zone
+Create hosted zone
+
+After doing that it will give some records [name server records --> see Record Type NS] we have to take this and update in hostinger.
+
+Hostinger Click on you domain --> left panel click on DNS/ Nameservers --> Change Nameservers --> paste the 4 nameservers in aws to here in 4 lines --> Save
+Here, we are telling hostinger i don't need your service i just used you for registeration. I want to change the nameservers
+Just like we are porting number airtel to bsnl [registering number at airtel but porting to bsnl]
+porting domain ownership to aws but provider is always hostinger
+aws will charge money 1$ per month
+hostinger will take 24hrs to make changes. but, sometimes within 1hr or 2hrs also it will be done.
+
+After the changes are done in hostinger.
+Create a record in aws
+Record name  --> don't give subdoamin keep it as daws78s.online --> Record type is A-Routes traffic to an IPv4 address and some AWS resources --> value give fronted ip-address --> TTl 1 second --> Routing policy Simple routing --> create records
+
+daws78s.online this the domain we are giving to our project 
+in browser if you put that domain address our expense project will work
+
+Tommorow we will discuss again with full clarity. since our domain will take 1 day to be active. so, completed our project today.
+
+Siva-Artice About How DNS Work
+https://joindevops.medium.com/how-dns-work-30ef4ba6762c#:~:text=Root%20servers%20scans%20the%20domain,address%20configured%20for%20the%20domain.
+
+In backend we created an user expense but for db mysql why no user.
+siva said when you install mysql with dnf install mysql-server automatically an user named mysql is created
+in db you can go and check
+ps -ef | grep mysqld
+mysql    1922      1    0  01:54 ?      00:00:17   /usr/libexec/mysqld  --basedir=/usr
+root     2132   1397    0  03:37 ptx/0  00:00:00   grep  --color=auto mysqld
+
+you can see mysql user in first line. here it is creating user on its own in db.
+
+Outside companies will also have their customised ami's like we have an ami redhat DevOps321
+
+in sshd config file if you give username and password then you can login with username and password no need key.
+
+/etc/sudoers file is a configuration file that controls who can run commands with elevated privileges on a Linux or Unix system. 
+if give in /etc/sudoers no password as all then without password it will give prevliged access to new users.
+
+in configuration file it is given if a user is in wheel group he has to use password.
+if you set wheel also no password then you the users in group also no need to use password.
