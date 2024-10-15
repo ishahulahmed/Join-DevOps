@@ -566,3 +566,5 @@ if give in /etc/sudoers no password as all then without password it will give pr
 
 in configuration file it is given if a user is in wheel group he has to use password.
 if you set wheel also no password then you the users in group also no need to use password.
+
+siva has not explained about wheel group and sshd config file in classes conducted till know This is a question asked at the end of this Session by someone.
